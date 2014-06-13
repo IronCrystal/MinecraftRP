@@ -18,7 +18,7 @@ public class ChangeOccupation implements Listener {
 	@EventHandler
 	public void changeOccupation(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		OccupationalPlayer p = new OccupationalPlayer(player.getName());
+		OccupationalPlayer p = new OccupationalPlayer(player.getUniqueId());
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block block = event.getClickedBlock();
 			if (block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST) {

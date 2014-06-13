@@ -40,7 +40,7 @@ public class OccupationalCommands implements CommandExecutor {
 	}
 	
 	private void outputOccupationInfo(Player p) {
-		OccupationalPlayer player = new OccupationalPlayer(p.getName());
+		OccupationalPlayer player = new OccupationalPlayer(p.getUniqueId());
 		p.sendMessage(ChatColor.BLUE + "[MinecraftRP] Occupation: " + player.getOccupation().toString());
 	}
 }

@@ -3,6 +3,7 @@ package ironcrystal.minecraftrp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,10 +38,9 @@ public class Files {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Files Initialized");
 	}
 	
-	public static File getPlayerFile(String playerName) {
-		char firstLetter = playerName.charAt(0);
-		String path = "plugins/MinecraftRP/player/" + firstLetter + "/";
-		return new File(path + playerName + ".yml");
+	public static File getPlayerFile(UUID uuid) {
+		String path = "plugins/MinecraftRP/player/";
+		return new File(path + uuid.toString() + ".yml");
 	}
 	
 	public static void loadFile(File file, FileConfiguration fileConfig) {
