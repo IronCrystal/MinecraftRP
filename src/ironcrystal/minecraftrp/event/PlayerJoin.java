@@ -18,10 +18,9 @@ public class PlayerJoin implements Listener {
 	@EventHandler
 	public void playerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		char firstLetter = player.getName().charAt(0);
 		File file = null;
 		try {
-			file = new File("plugins/MinecraftRP/player/" + firstLetter + "/" + player.getName() + ".yml");
+			file = new File("plugins/MinecraftRP/player/" + player.getUniqueId().toString() + ".yml");
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
