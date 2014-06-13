@@ -13,11 +13,12 @@ public class OccupationalPlayer {
 	private Occupations occupation;
 	private String playerName;
 	private File playerFile;
+	private FileConfiguration config;
 	
 	public OccupationalPlayer(String playerName) {
 		this.playerName = playerName;
 		this.playerFile = Files.getPlayerFile(playerName);
-		FileConfiguration config = new YamlConfiguration();
+		config = new YamlConfiguration();
 		Files.loadFile(playerFile, config);
 		this.occupation = Occupation.getOccupationByString(config.getString("Occupation"));
 	}
@@ -28,5 +29,10 @@ public class OccupationalPlayer {
 	
 	public Occupations getOccupation() {
 		return occupation;
+	}
+	
+	public void setOccupation(Occupations occupation) {
+		config.set("Occupation", occupation.toString().toLowerCase());
+		Files.saveFile(playerFile, config);
 	}
 }

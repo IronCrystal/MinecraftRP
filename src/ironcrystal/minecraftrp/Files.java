@@ -18,19 +18,19 @@ public class Files {
 	public static File Permissions;
 	
 	public static void initializeFiles() {
-		Suppliers = new File("plugins/MinecraftRP/Occupations/Suppliers.yml");
+		Suppliers = new File("plugins/MinecraftRP/occupations/Suppliers.yml");
 		if (!Suppliers.exists()) {
 			saveFile(Suppliers, new YamlConfiguration());
 		}
-		ShopKeepers = new File("plugins/MinecraftRP/Occupations/ShopKeepers.yml");
+		ShopKeepers = new File("plugins/MinecraftRP/occupations/ShopKeepers.yml");
 		if (!ShopKeepers.exists()) {
 			saveFile(ShopKeepers, new YamlConfiguration());
 		}
-		Corporations = new File("plugins/MinecraftRP/Occupations/Corporations.yml");
+		Corporations = new File("plugins/MinecraftRP/occupations/Corporations.yml");
 		if (!Corporations.exists()) {
 			saveFile(Corporations, new YamlConfiguration());
 		}
-		Permissions = new File("plugins/MinecraftRP/Permissions/List of Permissions.yml");
+		Permissions = new File("plugins/MinecraftRP/permissions/List of Permissions.yml");
 		if (!Permissions.exists()) {
 			saveFile(Permissions, new YamlConfiguration());
 		}

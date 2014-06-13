@@ -10,6 +10,7 @@ public class MinecraftRP extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		Files.initializeFiles();
+		Permissions.initializePermissions();
 		Listeners.registerEvents(this);
 		
 		/**

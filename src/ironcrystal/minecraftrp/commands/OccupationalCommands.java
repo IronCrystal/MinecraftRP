@@ -17,6 +17,9 @@ public class OccupationalCommands implements CommandExecutor {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
 				if (sender.hasPermission("rp.admin")) {
+					if (args.length == 0) {
+						outputOccupationInfo(p);
+					}
 					//player is an admin
 				}else{
 					//player is typical
@@ -38,6 +41,6 @@ public class OccupationalCommands implements CommandExecutor {
 	
 	private void outputOccupationInfo(Player p) {
 		OccupationalPlayer player = new OccupationalPlayer(p.getName());
-		p.sendMessage(ChatColor.BLUE + "[MinecraftRP] Occupation: " + player.getOccupation().toString().toLowerCase());
+		p.sendMessage(ChatColor.BLUE + "[MinecraftRP] Occupation: " + player.getOccupation().toString());
 	}
 }

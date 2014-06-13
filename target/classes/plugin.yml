@@ -1,8 +1,0 @@
-name: MinecraftRP
-main: ironcrystal.minecraftrp.MinecraftRP
-version: 1.0
-commands:
-  score:
-    description: Shows scoreboard
-  rp:
-    description: RP Commands
