@@ -17,6 +17,7 @@ public class Files {
 	public static File ShopKeepers;
 	public static File Corporations;
 	public static File Permissions;
+	public static File Towns;
 	
 	public static void initializeFiles() {
 		Suppliers = new File("plugins/MinecraftRP/occupations/Suppliers.yml");
@@ -35,12 +36,21 @@ public class Files {
 		if (!Permissions.exists()) {
 			saveFile(Permissions, new YamlConfiguration());
 		}
+		Towns = new File("plugins/MinecraftRP/towns/Towns.yml");
+		if (!Towns.exists()) {
+			saveFile(Towns, new YamlConfiguration());
+		}
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Files Initialized");
 	}
 	
 	public static File getPlayerFile(UUID uuid) {
 		String path = "plugins/MinecraftRP/player/";
 		return new File(path + uuid.toString() + ".yml");
+	}
+	
+	public static File getTownFile(String name) {
+		String path = "plugins/MinecraftRP/towns/" + name + ".yml";
+		return new File(path);
 	}
 	
 	public static void loadFile(File file, FileConfiguration fileConfig) {

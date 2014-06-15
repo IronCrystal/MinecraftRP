@@ -16,6 +16,7 @@ public class OccupationalCommands implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("rp")) {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
+				OccupationalPlayer player = new OccupationalPlayer(p.getUniqueId());
 				if (sender.hasPermission("rp.admin")) {
 					if (args.length == 0) {
 						outputOccupationInfo(p);
@@ -26,6 +27,14 @@ public class OccupationalCommands implements CommandExecutor {
 					if (args.length == 0) {
 						//Send player info on occupation
 						outputOccupationInfo(p);
+					}
+					else if (args.length == 1) {
+						
+					}
+					else if (args.length == 2) {
+						if (args[0].equalsIgnoreCase("claim")) {
+							MayorCommands.claimLand(p, player, args[1]);
+						}
 					}
 				}
 			}
