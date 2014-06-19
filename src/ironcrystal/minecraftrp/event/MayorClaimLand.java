@@ -4,7 +4,8 @@ import ironcrystal.minecraftrp.MinecraftRP;
 import ironcrystal.minecraftrp.commands.MayorCommands;
 import ironcrystal.minecraftrp.occupations.Occupations;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
-import ironcrystal.minecraftrp.timer.MayorClaimChunkVisualTimer;
+import ironcrystal.minecraftrp.timer.mayor.MayorClaimChunkVisualTimer;
+import ironcrystal.minecraftrp.timer.mayor.MayorConfirmChunkTimer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,9 @@ import org.bukkit.scheduler.BukkitTask;
 public class MayorClaimLand implements Listener {
 
 	public static List<UUID> MayorsClaimingChunks = new ArrayList<UUID>();
-	public static HashMap<UUID, Integer> TasksForPlayer = new HashMap<UUID, Integer>();
+	public static HashMap<UUID, Integer> VisualGlassTasksForPlayer = new HashMap<UUID, Integer>();
+	public static HashMap<UUID, Integer> ConfirmClaimTaskForPlayer = new HashMap<UUID, Integer>();
+
 
 	private MinecraftRP main;
 
@@ -82,8 +85,10 @@ public class MayorClaimLand implements Listener {
 								}
 							}
 						}
-						BukkitTask task = Bukkit.getScheduler().runTaskLater(main, new MayorClaimChunkVisualTimer(BlocksChanged), 600L);
-						TasksForPlayer.put(p.getUniqueId(), task.getTaskId());
+						BukkitTask task = Bukkit.getScheduler().runTaskLater(main, new MayorClaimChunkVisualTimer(BlocksChanged, p), 500L);
+						BukkitTask confirmTask = Bukkit.getScheduler().runTaskLater(main, new MayorConfirmChunkTimer(p), 600L);
+						VisualGlassTasksForPlayer.put(p.getUniqueId(), task.getTaskId());
+						ConfirmClaimTaskForPlayer.put(p.getUniqueId(), confirmTask.getTaskId());
 						p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Please confirm selection with /rp confirm");
 					}
 				}

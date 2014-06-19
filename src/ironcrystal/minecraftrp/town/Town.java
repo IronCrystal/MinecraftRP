@@ -26,14 +26,14 @@ public class Town {
 		list.add(name);
 		config.set("Towns", list);
 		Files.saveFile(Files.Towns, config);
-		Bukkit.getLogger().info(ChatColor.GREEN + "[MinecraftRP] File for town " + name + " created succesfully.");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] File for town " + name + " created succesfully.");
 	}
 	
-	public static Integer[] getCentralChunk(String name) {
+	public static List<Integer> getCentralChunk(String name) {
 		File file = Files.getTownFile(name);
 		FileConfiguration config = new YamlConfiguration();
 		Files.loadFile(file, config);
-		Integer[] chunkLoc = (Integer[]) config.get("Central Chunk");
+		List<Integer> chunkLoc = config.getIntegerList("Central Chunk");
 		return chunkLoc;
 	}
 }
