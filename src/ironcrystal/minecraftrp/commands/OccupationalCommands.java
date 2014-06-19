@@ -1,5 +1,6 @@
 package ironcrystal.minecraftrp.commands;
 
+import ironcrystal.minecraftrp.occupations.Occupations;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
 import ironcrystal.minecraftrp.scoreboard.ScoreboardTesting;
 
@@ -17,26 +18,24 @@ public class OccupationalCommands implements CommandExecutor {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
 				OccupationalPlayer player = new OccupationalPlayer(p.getUniqueId());
-				if (sender.hasPermission("rp.admin")) {
-					if (args.length == 0) {
-						outputOccupationInfo(p);
-					}
-					//player is an admin
-				}else{
-					//player is typical
-					if (args.length == 0) {
-						//Send player info on occupation
-						outputOccupationInfo(p);
-					}
-					else if (args.length == 1) {
-						
-					}
-					else if (args.length == 2) {
-						if (args[0].equalsIgnoreCase("claim")) {
-							MayorCommands.claimLand(p, player, args[1]);
+				//player is typical
+				if (args.length == 0) {
+					//Send player info on occupation
+					outputOccupationInfo(p);
+				}
+				else if (args.length == 1) {
+					if (args[0].equalsIgnoreCase("confirm")) {
+						if (player.getOccupation() == Occupations.MAYOR) {
+							MayorCommands.confirmClaim(p);
 						}
 					}
 				}
+				else if (args.length == 2) {
+					if (args[0].equalsIgnoreCase("claim")) {
+						MayorCommands.claimLand(p, player, args[1]);
+					}
+				}
+
 			}
 		}
 		else if (cmd.getName().equalsIgnoreCase("score")) {
@@ -47,7 +46,7 @@ public class OccupationalCommands implements CommandExecutor {
 		}
 		return false;
 	}
-	
+
 	private void outputOccupationInfo(Player p) {
 		OccupationalPlayer player = new OccupationalPlayer(p.getUniqueId());
 		p.sendMessage(ChatColor.BLUE + "[MinecraftRP] Occupation: " + player.getOccupation().toString());

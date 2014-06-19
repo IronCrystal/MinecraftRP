@@ -29,12 +29,11 @@ public class Town {
 		Bukkit.getLogger().info(ChatColor.GREEN + "[MinecraftRP] File for town " + name + " created succesfully.");
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static List<Integer[]> getChunkLocations(String name) {
+	public static Integer[] getCentralChunk(String name) {
 		File file = Files.getTownFile(name);
 		FileConfiguration config = new YamlConfiguration();
 		Files.loadFile(file, config);
-		List<Integer[]> list = (List<Integer[]>) config.getList("Chunks");
-		return list;
+		Integer[] chunkLoc = (Integer[]) config.get("Central Chunk");
+		return chunkLoc;
 	}
 }
