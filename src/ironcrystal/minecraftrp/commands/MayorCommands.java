@@ -1,6 +1,7 @@
 package ironcrystal.minecraftrp.commands;
 
 import ironcrystal.minecraftrp.Files;
+import ironcrystal.minecraftrp.MinecraftRP;
 import ironcrystal.minecraftrp.event.MayorClaimLand;
 import ironcrystal.minecraftrp.occupations.Occupations;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
@@ -15,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,24 +30,33 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 public class MayorCommands {
-	
+
 	public static HashMap<UUID, Integer[]> MayorsConfirmingClaims = new HashMap<UUID, Integer[]>();
 	public static HashMap<UUID, String> MayorTownNames = new HashMap<UUID, String>();
-	
+
 	public static void claimLand(Player p, OccupationalPlayer player, String name) {
 		if (player.getOccupation() == Occupations.MAYOR) {
-			MayorTownNames.put(player.getUUID(), name);
-			MayorClaimLand.MayorsClaimingChunks.add(player.getUUID());
-			p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Right Click the Center Chunk for the Town");
+			OfflinePlayer offP = Bukkit.getOfflinePlayer(p.getUniqueId());
+			FileConfiguration fileConfig = new YamlConfiguration();
+			Files.loadFile(Files.Config, fileConfig);
+			double cost = fileConfig.getDouble("Cost of Starting a Village");
+			if (MinecraftRP.econ.getBalance(offP) > cost) {
+				MayorTownNames.put(player.getUUID(), name);
+				MayorClaimLand.MayorsClaimingChunks.add(player.getUUID());
+				p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Right Click the Center Chunk for the Town");
+			}else{
+				p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have enough money!");
+				p.sendMessage(ChatColor.RED + "[MinecraftRP] It costs " + cost + " dollars to start a village.");
+			}
 		}else{
 			p.sendMessage(ChatColor.RED + "[MinecraftRP] This command is for Mayors only.");
 		}
 	}
-	
+
 	public static void confirmClaim(Player p) {
 		if (MayorCommands.MayorsConfirmingClaims.containsKey(p.getUniqueId())) {
 			String name = MayorTownNames.get(p.getUniqueId());
-			
+
 			/**
 			 * Save Player File Info
 			 */
@@ -54,7 +65,7 @@ public class MayorCommands {
 			Files.loadFile(pFile, config);
 			config.set("Town", name);
 			Files.saveFile(pFile, config);
-			
+
 			/**
 			 * Save Town File Info
 			 */
@@ -63,7 +74,7 @@ public class MayorCommands {
 			config.set("Central Chunk", MayorsConfirmingClaims.get(p.getUniqueId()));
 			config.set("Radius", 1);
 			Files.saveFile(Files.getTownFile(name), config);
-			
+
 			/**
 			 * Create World Guard Region
 			 */
@@ -78,31 +89,31 @@ public class MayorCommands {
 				 */
 				Block topChunkLeft = centerChunk.getBlock(15, 0, 0);
 				Block bottomChunkRight = centerChunk.getBlock(0, 256, 15);
-				
+
 				Bukkit.broadcastMessage("TopChunkLeft: x: " + topChunkLeft.getX() + " y: " + topChunkLeft.getY() + " z: " + topChunkLeft.getZ());
 				Bukkit.broadcastMessage("BottomChunkRight: x: " + bottomChunkRight.getX() + " y: " + bottomChunkRight.getY() + " z: " + bottomChunkRight.getZ());
-				
+
 				/**
 				 * Get Corner Blocks for all 3 chunks relative to previously gained corner blocks
 				 */
 				Block topRegionLeft = p.getWorld().getBlockAt(topChunkLeft.getX() + 16, 0, topChunkLeft.getZ() - 16);
 				Block bottomRegionRight = p.getWorld().getBlockAt(bottomChunkRight.getX() - 16, 255, bottomChunkRight.getZ() + 16);
-				
+
 				Bukkit.broadcastMessage("TopRegionLeft: x: " + topRegionLeft.getX() + " y: " + topRegionLeft.getY() + " z: " + topRegionLeft.getZ());
 				Bukkit.broadcastMessage("BottomRegionRight: x: " + bottomRegionRight.getX() + " y: " + bottomRegionRight.getY() + " z: " + bottomRegionRight.getZ());
-				
+
 				/**
 				 * Get locations of corner blocks
 				 */
 				Location loc1 = topRegionLeft.getLocation();
 				Location loc2 = bottomRegionRight.getLocation();
-				
+
 				/**
 				 * Get BlockVectors of locations (required for WorldGuard)
 				 */
 				BlockVector topLeftBlock = new BlockVector(loc1.getBlockX(), loc1.getBlockY(), loc1.getBlockZ());
 				BlockVector bottomRightBlock = new BlockVector(loc2.getBlockX(), loc2.getBlockY(), loc2.getBlockZ());
-				
+
 				/**
 				 * Create Region
 				 */
@@ -113,8 +124,16 @@ public class MayorCommands {
 				regionManager.addRegion(region);
 			}
 			
+			/**
+			 * Remove Money
+			 */
+			Files.loadFile(Files.Config, config);
+			double cost = config.getDouble("Cost of Starting a Village");
+			MinecraftRP.econ.bankWithdraw(p.getName(), cost);
+
 			p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Center Chunk Claimed");
 			p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Your town has a 1 chunk radius, for a total of 3x3 chunks.");
+			p.sendMessage(ChatColor.BLUE + "[MinecraftRP] " + cost + " has been removed from your account.");
 			MayorClaimLand.MayorsClaimingChunks.remove(p.getUniqueId());
 			MayorsConfirmingClaims.remove(p.getUniqueId());
 			MayorTownNames.remove(p.getUniqueId());
@@ -127,7 +146,7 @@ public class MayorCommands {
 			p.sendMessage(ChatColor.RED + "[MinecraftRP] There is no claim to confirm!  Type /rp claim <name> to claim a town.");
 		}
 	}
-	
+
 	public static String getTown(OccupationalPlayer player) {
 		File file = Files.getPlayerFile(player.getUUID());
 		FileConfiguration config = new YamlConfiguration();

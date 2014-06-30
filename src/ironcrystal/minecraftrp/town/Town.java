@@ -36,4 +36,12 @@ public class Town {
 		List<Integer> chunkLoc = config.getIntegerList("Central Chunk");
 		return chunkLoc;
 	}
+	
+	public static List<String> getTownList() {
+		File file = Files.Towns;
+		FileConfiguration config = new YamlConfiguration();
+		Files.loadFile(file, config);
+		List<String> list = config.getStringList("Towns");
+		return list;
+	}
 }

@@ -1,7 +1,7 @@
 name: MinecraftRP
 main: ironcrystal.minecraftrp.MinecraftRP
 version: 1.0
-depend: [WorldGuard]
+depend: [WorldGuard, Vault]
 commands:
   score:
     description: Shows scoreboard
