@@ -37,7 +37,7 @@ public class Files {
 		if (!Permissions.exists()) {
 			saveFile(Permissions, new YamlConfiguration());
 		}
-		Towns = new File("plugins/MinecraftRP/towns/owns.yml");
+		Towns = new File("plugins/MinecraftRP/towns/Towns.yml");
 		if (!Towns.exists()) {
 			saveFile(Towns, new YamlConfiguration());
 		}
@@ -46,6 +46,7 @@ public class Files {
 			FileConfiguration fileConfig = new YamlConfiguration();
 			fileConfig.set("Chunk Distance Between Towns Squared", 225);
 			fileConfig.set("Cost of Starting a Village", 200);
+			fileConfig.set("Cost of Expanding a Village Per Chunk", 50);
 			saveFile(Config, fileConfig);
 		}
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Files Initialized");

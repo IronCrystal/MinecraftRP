@@ -29,11 +29,9 @@ public class MinecraftRP extends JavaPlugin {
 		getCommand("score").setExecutor(commands);
 		getCommand("rp").setExecutor(commands);
 		
-		if (!setupEconomy() ) {
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no Vault found!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+		if (!setUpDependencies()) {
+			getServer().getPluginManager().disablePlugin(this);
+		}
 	}
 
 	@Override
@@ -45,18 +43,34 @@ public class MinecraftRP extends JavaPlugin {
 		return this;
 	}
 	
-	private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+	private boolean setUpDependencies() {
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no Vault found!");
             return false;
         }
+		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Hooked into Vault!");
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
+        	Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no Economy plugin found!");
             return false;
         }
         econ = rsp.getProvider();
-        return econ != null;
-    }
-
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Hooked into Economy Plugin!");
+        
+        if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
+        	Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no WorldGuard found!");
+        	return false;
+        }
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Hooked into WorldGuard!");
+        
+        if (getServer().getPluginManager().getPlugin("WorldEdit") == null) {
+        	Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no WorldEdit found!");
+        	return false;
+        }
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Hooked into WorldEdit!");
+        return true;
+	}
+	
 	public WorldGuardPlugin getWorldGuard() {
 		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 

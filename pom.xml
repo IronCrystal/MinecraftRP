@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>MinecraftRP</groupId>
 	<artifactId>MinecraftRP</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>MinecraftRP</name>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -52,6 +52,13 @@
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
+			<version>LATEST</version>
+			<scope>provided</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
 			<version>LATEST</version>
 			<scope>provided</scope>
 			<type>jar</type>
