@@ -1,6 +1,7 @@
- package ironcrystal.minecraftrp.commands;
+package ironcrystal.minecraftrp.commands;
 
 import ironcrystal.minecraftrp.occupations.Occupations;
+import ironcrystal.minecraftrp.player.Mayor;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
 import ironcrystal.minecraftrp.scoreboard.ScoreboardTesting;
 
@@ -31,19 +32,27 @@ public class OccupationalCommands implements CommandExecutor {
 					}
 					else if (args[0].equalsIgnoreCase("town")) {
 						if (player.getOccupation() == Occupations.MAYOR) {
-							
+
 						}
 					}
 				}
 				else if (args.length == 2) {
 					if (args[0].equalsIgnoreCase("claim")) {
-						MayorCommands.claimLand(p, player, args[1]);
+						if (player.getOccupation() == Occupations.MAYOR) {
+							Mayor mayor = new Mayor(player.getUUID());
+							MayorCommands.claimLand(p, mayor, args[1]);
+						}else{
+							p.sendMessage(ChatColor.RED + "[MinecraftRP] This command is for Mayors only.");
+						}
 					}
 					else if (args[0].equalsIgnoreCase("town")) {
 						if (player.getOccupation() == Occupations.MAYOR) {
+							Mayor mayor = new Mayor(player.getUUID());
 							if (args[1].equalsIgnoreCase("expand")) {
-								MayorCommands.expandTown(p, player);
+								MayorCommands.expandTown(p, mayor);
 							}
+						}else{
+							p.sendMessage(ChatColor.RED + "[MinecraftRP] This command is for Mayors only.");
 						}
 					}
 				}

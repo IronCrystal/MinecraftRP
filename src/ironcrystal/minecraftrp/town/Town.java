@@ -1,8 +1,5 @@
 package ironcrystal.minecraftrp.town;
 
-import ironcrystal.minecraftrp.Files;
-import ironcrystal.minecraftrp.MinecraftRP;
-
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
@@ -23,33 +20,85 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
+import ironcrystal.minecraftrp.Files;
+import ironcrystal.minecraftrp.MinecraftRP;
+import ironcrystal.minecraftrp.player.Mayor;
+
 public class Town {
 	
-	public static void addWorldGuard(String name) {
-		int radius = Town.getTownRadius(name);
+	private Mayor mayor;
+	private File file;
+	private String name;
+	private int radius;
+	private World world;
+	private List<Integer> chunkLoc;
+	private List<String> residents;
+	
+	private FileConfiguration fileConfig;
+	
+	/**public Town(Mayor mayor) {
+		this.mayor = mayor;
+		File pFile = Files.getPlayerFile(mayor.getUUID());
+		FileConfiguration pConfig = new YamlConfiguration();
+		Files.loadFile(pFile, pConfig);
+		this.name = pConfig.getString("Town");
+		this.file = Files.getTownFile(name);
+		this.fileConfig = new YamlConfiguration();
+		if (!this.file.exists()) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: A town object was created but the file has not been created!");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: Something is wrong!");
+		}
+		Files.loadFile(file, fileConfig);
+		this.radius = fileConfig.getInt("Radius");
+		this.world = Bukkit.getWorld(fileConfig.getString("World"));
+		this.chunkLoc = fileConfig.getIntegerList("Central Chunk");
+		this.residents = fileConfig.getStringList("Residents");
+	}
+	**/
+	protected Town(String name) {
+		this.name = name;
+		this.file = Files.getTownFile(name);
+		if (!this.file.exists()) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: A town object was created but the file has not been created!");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: Something is wrong!");
+		}
+		this.fileConfig = new YamlConfiguration();
+		Files.loadFile(file, fileConfig);
+		UUID uuid = UUID.fromString(fileConfig.getString("Mayor"));
+		this.mayor = new Mayor(uuid);
+		this.radius = fileConfig.getInt("Radius");
+		this.world = Bukkit.getWorld(fileConfig.getString("World"));
+		this.chunkLoc = fileConfig.getIntegerList("Central Chunk");
+		this.residents = fileConfig.getStringList("Residents");
+	}
+	
+	public void addResident(String name) {
+		residents.add(name);
+		fileConfig.set("Residents", residents);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public List<Integer> getCentralChunkLoc() {
+		return chunkLoc;
+	}
+	
+	public void addWorldGuardRegion() {
 		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin instanceof WorldGuardPlugin) {
 			WorldGuardPlugin wgp = (WorldGuardPlugin) plugin;
-			RegionManager regionManager = wgp.getRegionManager(Town.getWorld(name));
-			List<Integer> centerChunkLoc = Town.getCentralChunk(name);
-			Chunk centerChunk = Town.getWorld(name).getChunkAt(centerChunkLoc.get(0), centerChunkLoc.get(1));
+			RegionManager regionManager = wgp.getRegionManager(world);
+			Chunk centerChunk = world.getChunkAt(chunkLoc.get(0), chunkLoc.get(1));
 			/**
 			 * Get Corner Block relative to chunk
 			 */
 			Block topChunkLeft = centerChunk.getBlock(15, 0, 0);
 			Block bottomChunkRight = centerChunk.getBlock(0, 256, 15);
 
-			//Bukkit.broadcastMessage("TopChunkLeft: x: " + topChunkLeft.getX() + " y: " + topChunkLeft.getY() + " z: " + topChunkLeft.getZ());
-			//Bukkit.broadcastMessage("BottomChunkRight: x: " + bottomChunkRight.getX() + " y: " + bottomChunkRight.getY() + " z: " + bottomChunkRight.getZ());
-
 			/**
 			 * Get Corner Blocks for all 3 chunks relative to previously gained corner blocks
 			 */
-			Block topRegionLeft = Town.getWorld(name).getBlockAt(topChunkLeft.getX() + 16 * radius, 0, topChunkLeft.getZ() - 16 * radius);
-			Block bottomRegionRight = Town.getWorld(name).getBlockAt(bottomChunkRight.getX() - 16 * radius, 255, bottomChunkRight.getZ() + 16 * radius);
-
-			//Bukkit.broadcastMessage("TopRegionLeft: x: " + topRegionLeft.getX() + " y: " + topRegionLeft.getY() + " z: " + topRegionLeft.getZ());
-			//Bukkit.broadcastMessage("BottomRegionRight: x: " + bottomRegionRight.getX() + " y: " + bottomRegionRight.getY() + " z: " + bottomRegionRight.getZ());
+			Block topRegionLeft = world.getBlockAt(topChunkLeft.getX() + 16 * radius, 0, topChunkLeft.getZ() - 16 * radius);
+			Block bottomRegionRight = world.getBlockAt(bottomChunkRight.getX() - 16 * radius, 255, bottomChunkRight.getZ() + 16 * radius);
 			
 			/**
 			 * Get locations of corner blocks
@@ -68,105 +117,79 @@ public class Town {
 			 */
 			ProtectedCuboidRegion region = new ProtectedCuboidRegion(name, topLeftBlock, bottomRightBlock);
 			DefaultDomain defaultDomain = new DefaultDomain();
-			defaultDomain.addPlayer(Bukkit.getPlayer(Town.getOwner(name)).getName());
-			//defaultDomain.addPlayer("IronCrystal");
+			defaultDomain.addPlayer(mayor.getName());
 			region.setOwners(defaultDomain);
 			regionManager.addRegion(region);
 		}
+	
 	}
 	
-	public static void createTownFile(String name) {
-		String path = "plugins/MinecraftRP/towns/" + name + ".yml";
-		File file = new File(path);
-		if (!file.exists()) {
-			FileConfiguration config = new YamlConfiguration();
-			//config.set("Type", "Village");
-			Files.saveFile(file, config);
-		}
+	public void expandTown() {
+		setRadius(radius + 1);
+		removeWorldGuard();
+		addWorldGuardRegion();
 		FileConfiguration config = new YamlConfiguration();
-		Files.loadFile(Files.Towns, config);
-		List<String> list = config.getStringList("Towns");
-		list.add(name);
-		config.set("Towns", list);
-		Files.saveFile(Files.Towns, config);
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] File for town " + name + " created succesfully.");
-	}
-	
-	public static void expandTown(String name) {
-		FileConfiguration config = new YamlConfiguration();
-		int radius = getTownRadius(name);
-		setTownRadius(name, radius + 1);
-		Town.removeWorldGuard(name);
-		Town.addWorldGuard(name);
 		Files.loadFile(Files.Config, config);
 		double baseCost = config.getDouble("Cost of Expanding a Village Per Chunk");
-		int numberOfChunks = (radius + 1) * 8;
+		int numberOfChunks = getRadius() * 8;
 		double cost = baseCost * numberOfChunks;
-		MinecraftRP.econ.bankWithdraw(Bukkit.getPlayer(Town.getOwner(name)).getName(), cost);
+		MinecraftRP.econ.bankWithdraw(mayor.getName(), cost);
 	}
 	
-	public static List<Integer> getCentralChunk(String name) {
-		File file = Files.getTownFile(name);
-		FileConfiguration config = new YamlConfiguration();
-		Files.loadFile(file, config);
-		List<Integer> chunkLoc = config.getIntegerList("Central Chunk");
-		return chunkLoc;
+	public File getFile() {
+		return file;
 	}
 	
-	public static UUID getOwner(String name) {
-		File file = Files.getTownFile(name);
-		FileConfiguration fileConfig = new YamlConfiguration();
-		Files.loadFile(file, fileConfig);
-		UUID uuid = UUID.fromString(fileConfig.getString("Mayor"));
-		return uuid;
+	public Mayor getMayor() {
+		return mayor;
 	}
 	
-	public static List<String> getTownList() {
-		File file = Files.Towns;
-		FileConfiguration config = new YamlConfiguration();
-		Files.loadFile(file, config);
-		List<String> list = config.getStringList("Towns");
-		return list;
+	public String getName() {
+		return name;
 	}
 	
-	public static String getTownName(UUID uuid) {
-		File pFile = Files.getPlayerFile(uuid);
-		FileConfiguration fileConfig = new YamlConfiguration();
-		Files.loadFile(pFile, fileConfig);
-		return fileConfig.getString("Town");
-	}
-	
-	public static int getTownRadius(String name) {
-		File file = Files.getTownFile(name);
-		FileConfiguration fileConfig = new YamlConfiguration();
-		Files.loadFile(file, fileConfig);
-		int radius = fileConfig.getInt("Radius");
+	public int getRadius() {
 		return radius;
 	}
 	
-	public static World getWorld(String name) {
-		File file = Files.getTownFile(name);
-		FileConfiguration fileConfig = new YamlConfiguration();
-		Files.loadFile(file, fileConfig);
-		String worldName = fileConfig.getString("World");
-		World world = Bukkit.getWorld(worldName);
+	public List<String> getResidents() {
+		return residents;
+	}
+	
+	public World getWorld() {
 		return world;
 	}
 	
-	public static void removeWorldGuard(String name) {
+	public void removeResident(String name) {
+		residents.remove(name);
+		fileConfig.set("Residents", residents);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public void removeWorldGuard() {
 		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin instanceof WorldGuardPlugin) {
 			WorldGuardPlugin wgp = (WorldGuardPlugin) plugin;
-			RegionManager regionManager = wgp.getRegionManager(Town.getWorld(name));
+			RegionManager regionManager = wgp.getRegionManager(world);
 			regionManager.removeRegion(name);
 		}
 	}
 	
-	public static void setTownRadius(String name, int radius) {
-		File file = Files.getTownFile(name);
-		FileConfiguration fileConfig = new YamlConfiguration();
-		Files.loadFile(file, fileConfig);
-		fileConfig.set("Radius", radius);
+	public void setFile(File file) {
+		this.file = file;
+	}
+	
+	public void setMayor(Mayor mayor) {
+		this.mayor = mayor;
+	}
+
+	public void setRadius(int radius) {
+		this.radius = radius;
+		fileConfig.set("Radius", getRadius());
 		Files.saveFile(file, fileConfig);
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 }

@@ -1,5 +1,6 @@
 package ironcrystal.minecraftrp.event;
 
+import ironcrystal.minecraftrp.Files;
 import ironcrystal.minecraftrp.MinecraftRP;
 import ironcrystal.minecraftrp.commands.MayorCommands;
 import ironcrystal.minecraftrp.occupations.Occupations;
@@ -7,10 +8,11 @@ import ironcrystal.minecraftrp.player.OccupationalPlayer;
 import ironcrystal.minecraftrp.timer.mayor.MayorClaimChunkVisualTimer;
 import ironcrystal.minecraftrp.timer.mayor.MayorConfirmChunkTimer;
 import ironcrystal.minecraftrp.town.Town;
+import ironcrystal.minecraftrp.town.TownManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,12 +36,16 @@ public class MayorClaimLand implements Listener {
 	public static List<UUID> MayorsClaimingChunks = new ArrayList<UUID>();
 	public static HashMap<UUID, Integer> VisualGlassTasksForPlayer = new HashMap<UUID, Integer>();
 	public static HashMap<UUID, Integer> ConfirmClaimTaskForPlayer = new HashMap<UUID, Integer>();
+	
+	private File config = Files.Config;
+	private FileConfiguration fileConfig = new YamlConfiguration();
 
 
 	private MinecraftRP main;
 
 	public MayorClaimLand(MinecraftRP plugin) {
 		main = plugin;
+		Files.loadFile(config, fileConfig);
 	}
 
 	@EventHandler
@@ -55,45 +63,29 @@ public class MayorClaimLand implements Listener {
 					/**
 					 * Check for distance from other chunks
 					 */
-					double distancesquared = Double.MAX_VALUE;
-					List<String> townList = Town.getTownList();
-					Bukkit.broadcastMessage("Townlist size: " + townList.size());
-					Iterator<String> iterator = townList.iterator();
+					
+					for (Town town : TownManager.townList) {
+						List<Integer> centerChunkLoc  = town.getCentralChunkLoc();
+						Chunk centerChunk = p.getWorld().getChunkAt(centerChunkLoc.get(0), centerChunkLoc.get(1));
+						
+						double x1 = chunk.getX();
+						double z1 = chunk.getZ();
+						double x2 = centerChunk.getX();
+						double z2 = centerChunk.getZ();
+						double distancesquared = (x1-x2) * (x1-x2) + (z1-z2) * (z1-z2);
 
-					if (townList != null) {
-						Bukkit.broadcastMessage("Townlist is not null!");
-						while (iterator.hasNext()) {
-							Bukkit.broadcastMessage("Iterator has next!");
-							String town = iterator.next();
-							List<Integer> centerChunkLoc = Town.getCentralChunk(town);
-							Chunk centerChunk = p.getWorld().getChunkAt(centerChunkLoc.get(0), centerChunkLoc.get(1));
-							
-							double x1 = chunk.getX();
-							double z1 = chunk.getZ();
-							double x2 = centerChunk.getX();
-							double z2 = centerChunk.getZ();
-							Bukkit.broadcastMessage("x1: " + x1);
-							Bukkit.broadcastMessage("z1: " + z1);
-							Bukkit.broadcastMessage("x2: " + x2);
-							Bukkit.broadcastMessage("z2: " + z2);
-							distancesquared = (x1-x2) * (x1-x2) + (z1-z2) * (z1-z2);
-							Bukkit.broadcastMessage("Distance is: " + distancesquared);
-
-							if (distancesquared < 225) {
-								Bukkit.broadcastMessage("Distance is too close!  Breaking");
-								distanceIsGood = false;
-								break;
-							}
+						if (distancesquared < fileConfig.getDouble("Chunk Distance Between Towns Squared")) {
+							distanceIsGood = false;
+							break;
 						}
 					}
-
-					/**
-					 * TODO
-					 * if distance is good
-					 */
+					
 					if (distanceIsGood) {
 						HashMap<Location, Material> BlocksChanged = new HashMap<Location, Material>();
-						Integer[] chunkLoc = {chunk.getX(), chunk.getZ()};
+						List<Integer> chunkLoc = new ArrayList<Integer>();
+						chunkLoc.add(chunk.getX());
+						chunkLoc.add(chunk.getX());
+						//Integer[] chunkLoc = {chunk.getX(), chunk.getZ()};
 						MayorCommands.MayorsConfirmingClaims.put(player.getUUID(), chunkLoc);
 						for (int z = 0; z < 16; z++) {
 							for (int x = 0; x < 16; x++) {

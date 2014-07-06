@@ -2,6 +2,7 @@ package ironcrystal.minecraftrp;
 
 import ironcrystal.minecraftrp.commands.OccupationalCommands;
 import ironcrystal.minecraftrp.event.Listeners;
+import ironcrystal.minecraftrp.town.TownManager;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -21,6 +22,7 @@ public class MinecraftRP extends JavaPlugin {
 		Files.initializeFiles();
 		Permissions.initializePermissions();
 		Listeners.registerEvents(this);
+		TownManager.initializeTownList();
 
 		/**
 		 * Commands
