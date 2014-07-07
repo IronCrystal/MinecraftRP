@@ -84,7 +84,7 @@ public class MayorClaimLand implements Listener {
 						HashMap<Location, Material> BlocksChanged = new HashMap<Location, Material>();
 						List<Integer> chunkLoc = new ArrayList<Integer>();
 						chunkLoc.add(chunk.getX());
-						chunkLoc.add(chunk.getX());
+						chunkLoc.add(chunk.getZ());
 						//Integer[] chunkLoc = {chunk.getX(), chunk.getZ()};
 						MayorCommands.MayorsConfirmingClaims.put(player.getUUID(), chunkLoc);
 						for (int z = 0; z < 16; z++) {

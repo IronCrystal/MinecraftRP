@@ -1,12 +1,22 @@
 package ironcrystal.minecraftrp.event;
 
+import ironcrystal.minecraftrp.occupations.Occupations;
+import ironcrystal.minecraftrp.player.Mayor;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
+import ironcrystal.minecraftrp.town.Town;
+import ironcrystal.minecraftrp.town.TownManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.plugin.Plugin;
+
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class RegionCreation implements Listener {
 	
@@ -16,12 +26,12 @@ public class RegionCreation implements Listener {
 			OccupationalPlayer p = new OccupationalPlayer(event.getPlayer().getUniqueId());
 			Bukkit.broadcastMessage("Someone is creating a region!");
 			Bukkit.broadcastMessage("Their Occupation is " + p.getOccupation().toString());
-			if (!p.getOccupation().toString().equalsIgnoreCase("Mayor")) {
+			if (p.getOccupation() != Occupations.MAYOR || TownManager.getTown(new Mayor(p.getUUID())) == null) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You must be a Mayor to use WorldGuard!");
+				event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You must be the Mayor of a town to use WorldGuard!");
 			}else{
 				//if region isn't completely inside town, cancel
-				if (!isWithinTown()) {
+				if (!isWithinTown(event.getPlayer())) {
 					event.setCancelled(true);
 					event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You can only claim land within your town!");
 				}
@@ -33,7 +43,43 @@ public class RegionCreation implements Listener {
 	 * TODO
 	 * @return whether region is within town
 	 */
-	private boolean isWithinTown() {
-		return true;
+	private boolean isWithinTown(Player p) {
+		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+		if (plugin instanceof WorldEditPlugin) {
+			WorldEditPlugin wep = (WorldEditPlugin) plugin;
+			Selection sel = wep.getSelection(p);
+			Location selMaxLoc = sel.getMaximumPoint();
+			Location selMinLoc = sel.getMinimumPoint();
+			
+			int selMaxLocX = Math.max(selMaxLoc.getBlockX(), selMinLoc.getBlockX());
+			int selMaxLocZ = Math.max(selMaxLoc.getBlockZ(), selMinLoc.getBlockZ());
+			
+			int selMinLocX = Math.min(selMaxLoc.getBlockX(), selMinLoc.getBlockX());
+			int selMinLocZ = Math.min(selMaxLoc.getBlockZ(), selMinLoc.getBlockZ());
+			
+			Town town = TownManager.getTown(new Mayor(p.getUniqueId()));
+			
+			if (town == null) {
+				return false;
+			}else{				
+				/**
+				 * Get opposite corners
+				 */
+				Location townMaxLoc = town.getTownCorners().get(0);
+				Location townMinLoc = town.getTownCorners().get(2);
+				
+				int townMaxLocX = townMaxLoc.getBlockX();
+				int townMaxLocZ = townMaxLoc.getBlockZ();
+				
+				int townMinLocX = townMinLoc.getBlockX();
+				int townMinLocZ = townMinLoc.getBlockZ();
+				
+				if (townMaxLocX > selMaxLocX && townMaxLocZ > selMaxLocZ && townMinLocX < selMinLocX && townMinLocZ < selMinLocZ) {
+					p.sendMessage("Returning true");
+					return true;
+				}
+			}			
+		}
+		return false;
 	}
 }

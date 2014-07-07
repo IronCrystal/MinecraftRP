@@ -25,7 +25,7 @@ public class MayorCommands {
 	public static HashMap<UUID, String> MayorTownNames = new HashMap<UUID, String>();
 
 	public static void claimLand(Player p, Mayor mayor, String name) {
-		//if (mayor.getOccupation() == Occupations.MAYOR) {
+		if (TownManager.getTown(mayor) == null) {
 			OfflinePlayer offP = Bukkit.getOfflinePlayer(p.getUniqueId());
 			FileConfiguration fileConfig = new YamlConfiguration();
 			Files.loadFile(Files.Config, fileConfig);
@@ -38,9 +38,9 @@ public class MayorCommands {
 				p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have enough money!");
 				p.sendMessage(ChatColor.RED + "[MinecraftRP] It costs " + cost + " dollars to start a village.");
 			}
-		//}else{
-		//	p.sendMessage(ChatColor.RED + "[MinecraftRP] This command is for Mayors only.");
-		//}
+		}else{
+			p.sendMessage(ChatColor.RED + "[MinecraftRP] You already own a town!");
+		}
 	}
 
 	public static void confirmClaim(Player p) {
@@ -60,20 +60,11 @@ public class MayorCommands {
 			 * Save Town File Info
 			 */
 			Town town = TownManager.createNewTown(new Mayor(p.getUniqueId()), name, 1, p.getWorld(), MayorsConfirmingClaims.get(p.getUniqueId()));
-			//			TownMethods.createTownFile(name);
-			//			FileConfiguration fileConfig = new YamlConfiguration();
-			//			Files.loadFile(Files.getTownFile(name), fileConfig);
-			//			fileConfig.set("Central Chunk", MayorsConfirmingClaims.get(p.getUniqueId()));
-			//			fileConfig.set("Radius", 1);
-			//			fileConfig.set("World", p.getWorld().getName());
-			//			fileConfig.set("Mayor", p.getUniqueId().toString());
-			//			Files.saveFile(Files.getTownFile(name), fileConfig);
 
 			/**
 			 * Create World Guard Region
 			 */
 			town.addWorldGuardRegion();
-			//TownMethods.addWorldGuard(name);
 
 			/**
 			 * Remove Money

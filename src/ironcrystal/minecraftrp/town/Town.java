@@ -1,6 +1,7 @@
 package ironcrystal.minecraftrp.town;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,29 +83,48 @@ public class Town {
 		return chunkLoc;
 	}
 	
-	public void addWorldGuardRegion() {
+	/**
+	 * Returns the location of corners like in a grid system.
+	 * Z is like Y on 2D grid, and loc1-4 are their respective quadrants.
+	 * @return List of locations of corners. index 0 and 2 are opposite corners
+	 */
+	public List<Location> getTownCorners() {
+		List<Location> list = new ArrayList<Location>();
+		Chunk centerChunk = world.getChunkAt(chunkLoc.get(0), chunkLoc.get(1));
+		/**
+		 * Get Corner Block relative to chunk
+		 */			
+		Block chunkMax = centerChunk.getBlock(15, 0, 15);
+		Block chunkMin = centerChunk.getBlock(0, 0, 0);
+
+		/**
+		 * Get Corner Blocks for all 3 chunks relative to previously gained corner blocks
+		 */
+		Block regionMax = world.getBlockAt(chunkMax.getX() + 16 * radius, 255, chunkMax.getZ() + 16 * radius);
+		Block regionMin = world.getBlockAt(chunkMin.getX() - 16 * radius, 0, chunkMin.getZ() - 16 * radius);
+		
+		/**
+		 * Get locations of corner blocks
+		 */
+		Location loc1 = regionMax.getLocation();
+		Location loc2 = new Location(world, regionMin.getX(), 0, regionMax.getZ());
+		Location loc3 = regionMin.getLocation();
+		Location loc4 = new Location(world, regionMax.getX(), 255, regionMin.getZ());
+		list.add(loc1);
+		list.add(loc2);
+		list.add(loc3);
+		list.add(loc4);
+		return list;
+	}
+	
+	public Town addWorldGuardRegion() {
 		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin instanceof WorldGuardPlugin) {
 			WorldGuardPlugin wgp = (WorldGuardPlugin) plugin;
 			RegionManager regionManager = wgp.getRegionManager(world);
-			Chunk centerChunk = world.getChunkAt(chunkLoc.get(0), chunkLoc.get(1));
-			/**
-			 * Get Corner Block relative to chunk
-			 */
-			Block topChunkLeft = centerChunk.getBlock(15, 0, 0);
-			Block bottomChunkRight = centerChunk.getBlock(0, 256, 15);
-
-			/**
-			 * Get Corner Blocks for all 3 chunks relative to previously gained corner blocks
-			 */
-			Block topRegionLeft = world.getBlockAt(topChunkLeft.getX() + 16 * radius, 0, topChunkLeft.getZ() - 16 * radius);
-			Block bottomRegionRight = world.getBlockAt(bottomChunkRight.getX() - 16 * radius, 255, bottomChunkRight.getZ() + 16 * radius);
 			
-			/**
-			 * Get locations of corner blocks
-			 */
-			Location loc1 = topRegionLeft.getLocation();
-			Location loc2 = bottomRegionRight.getLocation();
+			Location loc1 = getTownCorners().get(0);
+			Location loc2 = getTownCorners().get(2);
 
 			/**
 			 * Get BlockVectors of locations (required for WorldGuard)
@@ -121,7 +141,7 @@ public class Town {
 			region.setOwners(defaultDomain);
 			regionManager.addRegion(region);
 		}
-	
+		return this;
 	}
 	
 	public void expandTown() {
