@@ -21,6 +21,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -48,6 +49,7 @@ public class MayorClaimLand implements Listener {
 		Files.loadFile(config, fileConfig);
 	}
 
+	@SuppressWarnings("unused")
 	@EventHandler
 	public void mayorClaimLand(PlayerInteractEvent event) {
 		Player p = event.getPlayer();
@@ -57,6 +59,7 @@ public class MayorClaimLand implements Listener {
 			if (player.getOccupation() == Occupations.MAYOR) {
 				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					Block block = event.getClickedBlock();
+					World world = block.getWorld();
 					Chunk chunk = block.getChunk();
 					boolean distanceIsGood = true;
 
@@ -87,6 +90,27 @@ public class MayorClaimLand implements Listener {
 						chunkLoc.add(chunk.getZ());
 						//Integer[] chunkLoc = {chunk.getX(), chunk.getZ()};
 						MayorCommands.MayorsConfirmingClaims.put(player.getUUID(), chunkLoc);
+						
+						/**
+						 * Get Corner Block relative to chunk
+						 */			
+						Block chunkMax = chunk.getBlock(15, 0, 15);
+						Block chunkMin = chunk.getBlock(0, 0, 0);
+
+						/**
+						 * Get Corner Blocks for all 3 chunks relative to previously gained corner blocks
+						 */
+						Block regionMax = world.getBlockAt(chunkMax.getX() + 16, 255, chunkMax.getZ() + 16);
+						Block regionMin = world.getBlockAt(chunkMin.getX() - 16, 0, chunkMin.getZ() - 16);
+						
+						/**
+						 * Get locations of corner blocks
+						 */
+						Location loc1 = regionMax.getLocation();
+						Location loc2 = new Location(world, regionMin.getX(), 0, regionMax.getZ());
+						Location loc3 = regionMin.getLocation();
+						Location loc4 = new Location(world, regionMax.getX(), 255, regionMin.getZ());
+						
 						for (int z = 0; z < 16; z++) {
 							for (int x = 0; x < 16; x++) {
 								if (z == 0 || z == 15) {

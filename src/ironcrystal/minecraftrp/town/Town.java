@@ -1,5 +1,9 @@
 package ironcrystal.minecraftrp.town;
 
+import ironcrystal.minecraftrp.Files;
+import ironcrystal.minecraftrp.MinecraftRP;
+import ironcrystal.minecraftrp.player.Mayor;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
@@ -20,10 +25,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-
-import ironcrystal.minecraftrp.Files;
-import ironcrystal.minecraftrp.MinecraftRP;
-import ironcrystal.minecraftrp.player.Mayor;
 
 public class Town {
 	
@@ -37,25 +38,6 @@ public class Town {
 	
 	private FileConfiguration fileConfig;
 	
-	/**public Town(Mayor mayor) {
-		this.mayor = mayor;
-		File pFile = Files.getPlayerFile(mayor.getUUID());
-		FileConfiguration pConfig = new YamlConfiguration();
-		Files.loadFile(pFile, pConfig);
-		this.name = pConfig.getString("Town");
-		this.file = Files.getTownFile(name);
-		this.fileConfig = new YamlConfiguration();
-		if (!this.file.exists()) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: A town object was created but the file has not been created!");
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: Something is wrong!");
-		}
-		Files.loadFile(file, fileConfig);
-		this.radius = fileConfig.getInt("Radius");
-		this.world = Bukkit.getWorld(fileConfig.getString("World"));
-		this.chunkLoc = fileConfig.getIntegerList("Central Chunk");
-		this.residents = fileConfig.getStringList("Residents");
-	}
-	**/
 	protected Town(String name) {
 		this.name = name;
 		this.file = Files.getTownFile(name);
@@ -73,8 +55,8 @@ public class Town {
 		this.residents = fileConfig.getStringList("Residents");
 	}
 	
-	public void addResident(String name) {
-		residents.add(name);
+	public void addResident(UUID uuid) {
+		residents.add(uuid.toString());
 		fileConfig.set("Residents", residents);
 		Files.saveFile(file, fileConfig);
 	}
@@ -139,7 +121,15 @@ public class Town {
 			DefaultDomain defaultDomain = new DefaultDomain();
 			defaultDomain.addPlayer(mayor.getName());
 			region.setOwners(defaultDomain);
+			/**
+			 * Really hacky way of doing this
+			 */
+			Player player = Bukkit.getPlayer(mayor.getUUID());
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " farewell &GYou are now leaving " + name);
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " greeting &GYou are now entering " + name);
 			regionManager.addRegion(region);
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " farewell &GYou are now leaving " + name);
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " greeting &GYou are now entering " + name);
 		}
 		return this;
 	}

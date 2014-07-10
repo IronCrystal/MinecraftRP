@@ -11,6 +11,7 @@ public class Listeners {
 	private static ChangeOccupation changeOccup;
 	private static MayorClaimLand claimLand;
 	private static RegionCreation regionCreation;
+	private static PlayerJoinTown playerJoinTown;
 	
 	private static void initializeListeners(MinecraftRP main) {
 		playerJoin = new PlayerJoin();
@@ -18,6 +19,7 @@ public class Listeners {
 		changeOccup = new ChangeOccupation();
 		claimLand = new MayorClaimLand(main);
 		regionCreation = new RegionCreation();
+		playerJoinTown = new PlayerJoinTown();
 	}
 	
 	public static void registerEvents(MinecraftRP main) {
@@ -27,6 +29,7 @@ public class Listeners {
 		Bukkit.getServer().getPluginManager().registerEvents(changeOccup, main);
 		Bukkit.getServer().getPluginManager().registerEvents(claimLand, main);
 		Bukkit.getServer().getPluginManager().registerEvents(regionCreation, main);
+		Bukkit.getServer().getPluginManager().registerEvents(playerJoinTown, main);
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Listeners Registered");
 	}
 

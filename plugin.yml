@@ -1,0 +1,9 @@
+name: MinecraftRP
+main: ironcrystal.minecraftrp.MinecraftRP
+version: 1.0
+depend: [WorldGuard, Vault]
+commands:
+  score:
+    description: Shows scoreboard
+  rp:
+    description: RP Commands

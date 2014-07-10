@@ -4,10 +4,11 @@ public class Occupation {
 	
 	public static Occupations getOccupationByString(String str) {
 		switch(str) {
-		case "generic occupation":
-		case "Generic Occupation": return Occupations.GENERICOCCUPATION;
+		case "Citizen":
+		case "citizen": return Occupations.CITIZEN;
 		case "supplier": return Occupations.SUPPLIER;
 		case "mayor": return Occupations.MAYOR;
+		case "shop keeper": return Occupations.SHOPKEEPER;
 		}
 		return null;
 	}

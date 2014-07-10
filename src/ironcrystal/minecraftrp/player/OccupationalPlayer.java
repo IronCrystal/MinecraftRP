@@ -13,7 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class OccupationalPlayer {
-	protected Occupations occupation;
+	private Occupations occupation;
 	private UUID uuid;
 	private File playerFile;
 	private FileConfiguration config;

@@ -19,26 +19,26 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class RegionCreation implements Listener {
-	
+
 	@EventHandler
 	public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if (event.getMessage().startsWith("/region create")) {
 			OccupationalPlayer p = new OccupationalPlayer(event.getPlayer().getUniqueId());
-			Bukkit.broadcastMessage("Someone is creating a region!");
-			Bukkit.broadcastMessage("Their Occupation is " + p.getOccupation().toString());
-			if (p.getOccupation() != Occupations.MAYOR || TownManager.getTown(new Mayor(p.getUUID())) == null) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You must be the Mayor of a town to use WorldGuard!");
-			}else{
-				//if region isn't completely inside town, cancel
-				if (!isWithinTown(event.getPlayer())) {
+			if (!event.getPlayer().hasPermission("rp.worlguardbypass")) {
+				if (p.getOccupation() != Occupations.MAYOR || TownManager.getTown(new Mayor(p.getUUID())) == null) {
 					event.setCancelled(true);
-					event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You can only claim land within your town!");
+					event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You must be the Mayor of a town to use WorldGuard!");
+				}else{
+					//if region isn't completely inside town, cancel
+					if (!isWithinTown(event.getPlayer())) {
+						event.setCancelled(true);
+						event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You can only claim land within your town!");
+					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * TODO
 	 * @return whether region is within town
@@ -50,15 +50,15 @@ public class RegionCreation implements Listener {
 			Selection sel = wep.getSelection(p);
 			Location selMaxLoc = sel.getMaximumPoint();
 			Location selMinLoc = sel.getMinimumPoint();
-			
+
 			int selMaxLocX = Math.max(selMaxLoc.getBlockX(), selMinLoc.getBlockX());
 			int selMaxLocZ = Math.max(selMaxLoc.getBlockZ(), selMinLoc.getBlockZ());
-			
+
 			int selMinLocX = Math.min(selMaxLoc.getBlockX(), selMinLoc.getBlockX());
 			int selMinLocZ = Math.min(selMaxLoc.getBlockZ(), selMinLoc.getBlockZ());
-			
+
 			Town town = TownManager.getTown(new Mayor(p.getUniqueId()));
-			
+
 			if (town == null) {
 				return false;
 			}else{				
@@ -67,15 +67,14 @@ public class RegionCreation implements Listener {
 				 */
 				Location townMaxLoc = town.getTownCorners().get(0);
 				Location townMinLoc = town.getTownCorners().get(2);
-				
+
 				int townMaxLocX = townMaxLoc.getBlockX();
 				int townMaxLocZ = townMaxLoc.getBlockZ();
-				
+
 				int townMinLocX = townMinLoc.getBlockX();
 				int townMinLocZ = townMinLoc.getBlockZ();
-				
+
 				if (townMaxLocX > selMaxLocX && townMaxLocZ > selMaxLocZ && townMinLocX < selMinLocX && townMinLocZ < selMinLocZ) {
-					p.sendMessage("Returning true");
 					return true;
 				}
 			}			

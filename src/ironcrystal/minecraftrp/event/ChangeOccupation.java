@@ -35,6 +35,14 @@ public class ChangeOccupation implements Listener {
 						p.setOccupation(Occupations.SUPPLIER);
 						player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Set: Supplier");
 						break;
+					case "citizen": 
+						p.setOccupation(Occupations.CITIZEN);
+						player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Set: Citizen");
+						break;
+					case "shop keeper": 
+						p.setOccupation(Occupations.SHOPKEEPER);
+						player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Set: Shop Keeper");
+						break;
 					default:
 					}
 				}

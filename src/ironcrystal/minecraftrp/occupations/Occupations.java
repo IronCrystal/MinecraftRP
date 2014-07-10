@@ -1,16 +1,18 @@
 package ironcrystal.minecraftrp.occupations;
 
 public enum Occupations {
-	GENERICOCCUPATION,
+	CITIZEN,
 	SUPPLIER,
+	SHOPKEEPER,
 	MAYOR;
 	
 	@Override
 	public String toString() {
 		switch(this) {
-		case GENERICOCCUPATION: return "Generic Occupation";
+		case CITIZEN: return "Citizen";
 		case SUPPLIER: return "Supplier";
 		case MAYOR: return "Mayor";
+		case SHOPKEEPER: return "Shop Keeper";
 		}
 		return null;
 	}

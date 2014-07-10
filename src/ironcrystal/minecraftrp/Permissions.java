@@ -9,6 +9,7 @@ public class Permissions {
 		FileConfiguration config = new YamlConfiguration();
 		Files.loadFile(Files.Permissions, config);
 		config.set("Permissions.Occupations.rp.placeOccupationSigns", "Have permissions to place occupation signs");
+		config.set("Permissions.Occuptions.rp.worlguardbypass", "Bypass Worldguard restrictions");
 		Files.saveFile(Files.Permissions, config);
 	}
 }

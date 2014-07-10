@@ -1,5 +1,7 @@
 package ironcrystal.minecraftrp;
 
+import java.io.File;
+
 import ironcrystal.minecraftrp.commands.OccupationalCommands;
 import ironcrystal.minecraftrp.event.Listeners;
 import ironcrystal.minecraftrp.town.TownManager;
@@ -7,6 +9,9 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +38,19 @@ public class MinecraftRP extends JavaPlugin {
 		
 		if (!setUpDependencies()) {
 			getServer().getPluginManager().disablePlugin(this);
+		}
+		/**
+		 * If Players are already online, make files if they don't exist
+		 */
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			File file = new File("plugins/MinecraftRP/player/" + p.getUniqueId().toString() + ".yml");
+			if (!file.exists()) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] New Player Found! Creating player file...");
+				FileConfiguration config = new YamlConfiguration();
+				config.set("Occupation", "citizen");
+				Files.saveFile(file, config);
+				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] " + p.getName() + " Player File Created!");
+			}
 		}
 	}
 

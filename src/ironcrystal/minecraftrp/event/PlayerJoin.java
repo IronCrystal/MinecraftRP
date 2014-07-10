@@ -28,7 +28,7 @@ public class PlayerJoin implements Listener {
 		if (!file.exists()) {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] New Player Joined! Creating player file...");
 			FileConfiguration config = new YamlConfiguration();
-			config.set("Occupation", "generic occupation");
+			config.set("Occupation", "citizen");
 			Files.saveFile(file, config);
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] " + player.getName() + " Player File Created!");
 		}
