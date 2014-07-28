@@ -3,6 +3,7 @@ package ironcrystal.minecraftrp;
 import java.io.File;
 
 import ironcrystal.minecraftrp.commands.OccupationalCommands;
+import ironcrystal.minecraftrp.contract.ContractManager;
 import ironcrystal.minecraftrp.event.Listeners;
 import ironcrystal.minecraftrp.town.TownManager;
 import net.milkbowl.vault.economy.Economy;
@@ -28,12 +29,11 @@ public class MinecraftRP extends JavaPlugin {
 		Permissions.initializePermissions();
 		Listeners.registerEvents(this);
 		TownManager.initializeTownList();
-
+		ContractManager.initializeTownList();
 		/**
 		 * Commands
 		 */
-		OccupationalCommands commands = new OccupationalCommands();
-		getCommand("score").setExecutor(commands);
+		OccupationalCommands commands = new OccupationalCommands(this);
 		getCommand("rp").setExecutor(commands);
 		
 		if (!setUpDependencies()) {

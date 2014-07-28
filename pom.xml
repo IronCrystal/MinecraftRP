@@ -44,6 +44,13 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>com.thezorro266.bukkit</groupId>
+			<artifactId>srm</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/SimpleRegionMarket.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<!-- Bukkit API Version, change if necessary -->

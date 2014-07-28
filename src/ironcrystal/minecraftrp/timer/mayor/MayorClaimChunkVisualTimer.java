@@ -1,6 +1,6 @@
 package ironcrystal.minecraftrp.timer.mayor;
 
-import ironcrystal.minecraftrp.event.MayorClaimLand;
+import ironcrystal.minecraftrp.event.town.MayorClaimLand;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

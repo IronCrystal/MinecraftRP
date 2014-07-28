@@ -1,4 +1,4 @@
-package ironcrystal.minecraftrp.event;
+package ironcrystal.minecraftrp.event.town;
 
 import ironcrystal.minecraftrp.Files;
 import ironcrystal.minecraftrp.player.Mayor;
