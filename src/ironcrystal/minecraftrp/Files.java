@@ -18,6 +18,7 @@ public class Files {
 	public static File Corporations;
 	public static File Permissions;
 	public static File Towns;
+	public static File Contracts;
 	public static File Config;
 	
 	public static void initializeFiles() {
@@ -41,10 +42,17 @@ public class Files {
 		if (!Towns.exists()) {
 			saveFile(Towns, new YamlConfiguration());
 		}
+		Contracts = new File("plugins/MinecraftRP/contracts/Contracts.yml");
+		if (!Contracts.exists()) {
+			FileConfiguration fileConfig = new YamlConfiguration();
+			fileConfig.set("Next ID", 0);
+			saveFile(Contracts, new YamlConfiguration());
+		}
 		Config = new File("plugins/MinecraftRP/config.yml");
 		if (!Config.exists()) {
 			FileConfiguration fileConfig = new YamlConfiguration();
 			fileConfig.set("Chunk Distance Between Towns Squared", 225);
+			fileConfig.set("Maximum Chunk Distance Between Towns Squared", 10000);
 			fileConfig.set("Cost of Starting a Village", 200);
 			fileConfig.set("Cost of Expanding a Village Per Chunk", 50);
 			saveFile(Config, fileConfig);
@@ -63,6 +71,11 @@ public class Files {
 	
 	public static File getTownFile(String name) {
 		String path = "plugins/MinecraftRP/towns/" + name + ".yml";
+		return new File(path);
+	}
+	
+	public static File getContractFile(int id) {
+		String path = "plugins/MinecraftRP/contracts/" + id + ".yml";
 		return new File(path);
 	}
 	

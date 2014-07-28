@@ -16,7 +16,7 @@ public class CreateOccupationSign implements Listener {
 				if (event.getLine(2).equalsIgnoreCase("Change Occup")) {
 					String str = event.getLine(1);
 					if (str.equalsIgnoreCase("mayor") || str.equalsIgnoreCase("supplier") || str.equalsIgnoreCase("citizen")
-							|| str.equalsIgnoreCase("shop keeper")) {
+							|| str.equalsIgnoreCase("shopkeeper")) {
 						player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Change Sign Created for " 
 								+ str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase() + "!");
 						event.setLine(0, ChatColor.BOLD + "[MinecraftRP]");

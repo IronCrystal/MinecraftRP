@@ -24,13 +24,15 @@ public class PlayerJoin implements Listener {
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
-
+		FileConfiguration config = new YamlConfiguration();
 		if (!file.exists()) {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] New Player Joined! Creating player file...");
-			FileConfiguration config = new YamlConfiguration();
 			config.set("Occupation", "citizen");
 			Files.saveFile(file, config);
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] " + player.getName() + " Player File Created!");
 		}
+		Files.loadFile(file, config);
+		config.set("Last Known Name", player.getName());
+		Files.saveFile(file, config);
 	}
 }
