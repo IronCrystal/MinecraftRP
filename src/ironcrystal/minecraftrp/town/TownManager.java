@@ -141,6 +141,8 @@ public class TownManager {
 	public static void setTownMayor(UUID uuid, String town) {
 		Town t = TownManager.getTown(town);
 		Mayor oldMayor = t.getMayor();
+		OccupationalPlayer occP = new OccupationalPlayer(uuid);
+		occP.setOccupation(Occupations.MAYOR);
 		Mayor newMayor = new Mayor(uuid);
 		t.setMayor(newMayor);
 		/**
@@ -167,8 +169,8 @@ public class TownManager {
 		FileConfiguration pFileConfig = new YamlConfiguration();
 		File pFile = Files.getPlayerFile(uuid);
 		Files.loadFile(pFile, pFileConfig);
-		OccupationalPlayer occP = new OccupationalPlayer(uuid);
-		occP.setOccupation(Occupations.MAYOR);
+		OccupationalPlayer occPl = new OccupationalPlayer(uuid);
+		occPl.setOccupation(Occupations.MAYOR);
 		pFileConfig.set("Town", town);
 		Files.saveFile(pFile, pFileConfig);
 	}
