@@ -125,6 +125,8 @@ public class Town {
 			 * Really hacky way of doing this
 			 */
 			Player player = Bukkit.getPlayer(mayor.getUUID());
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " farewell &GYou are now leaving " + name);
+			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " greeting &GYou are now entering " + name);
 			regionManager.addRegion(region);
 			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " farewell &GYou are now leaving " + name);
 			Bukkit.getServer().dispatchCommand(player, "region flag " + name + " greeting &GYou are now entering " + name);

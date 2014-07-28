@@ -8,10 +8,7 @@ public class Occupation {
 		case "citizen": return Occupations.CITIZEN;
 		case "supplier": return Occupations.SUPPLIER;
 		case "mayor": return Occupations.MAYOR;
-		case "shop keeper":
-		case "Shop Keeper":
-		case "Shop keeper":
-		case "shopkeeper": return Occupations.SHOPKEEPER;
+		case "shop keeper": return Occupations.SHOPKEEPER;
 		}
 		return null;
 	}

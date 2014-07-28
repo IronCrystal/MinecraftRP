@@ -12,7 +12,7 @@ public enum Occupations {
 		case CITIZEN: return "Citizen";
 		case SUPPLIER: return "Supplier";
 		case MAYOR: return "Mayor";
-		case SHOPKEEPER: return "Shopkeeper";
+		case SHOPKEEPER: return "Shop Keeper";
 		}
 		return null;
 	}

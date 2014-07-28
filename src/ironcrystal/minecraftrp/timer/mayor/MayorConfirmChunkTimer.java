@@ -1,7 +1,7 @@
 package ironcrystal.minecraftrp.timer.mayor;
 
 import ironcrystal.minecraftrp.commands.MayorCommands;
-import ironcrystal.minecraftrp.event.town.MayorClaimLand;
+import ironcrystal.minecraftrp.event.MayorClaimLand;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
