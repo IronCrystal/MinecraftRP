@@ -104,4 +104,12 @@ public class OccupationalPlayer {
 	public void setLastKnownName(String lastKnownName) {
 		this.lastKnownName = lastKnownName;
 	}
+
+	public FileConfiguration getConfig() {
+		return config;
+	}
+
+	public void setConfig(FileConfiguration config) {
+		this.config = config;
+	}
 }

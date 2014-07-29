@@ -3,6 +3,7 @@ package ironcrystal.minecraftrp.event;
 import ironcrystal.minecraftrp.Files;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,6 +34,10 @@ public class PlayerJoin implements Listener {
 		}
 		Files.loadFile(file, config);
 		config.set("Last Known Name", player.getName());
+		if (config.get("Contracts") == null) {
+			config.set("Contracts", new ArrayList<Integer>());
+			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Setting contracts to a blank array");
+		}
 		Files.saveFile(file, config);
 	}
 }

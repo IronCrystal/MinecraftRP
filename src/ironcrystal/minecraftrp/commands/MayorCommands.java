@@ -165,6 +165,7 @@ public class MayorCommands {
 			OfflinePlayer offP = Bukkit.getOfflinePlayer(recipient);
 			if (offP.isOnline()) {
 				Player newmayor = Bukkit.getPlayer(recipient);
+				oldMayor.sendMessage(ChatColor.GREEN + "[MinecraftRP] Your offer of mayorship to " + newmayor.getName() + " has been sent!");
 				newmayor.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + oldMayor.getName() + " wants to transfer ownership of "
 						+ TownManager.getTown(mayor).getName() + " to you!");
 				newmayor.sendMessage(ChatColor.GREEN + "[MinecraftRP] Type " + ChatColor.RED + "/rp accept " + ChatColor.GREEN + "or " + ChatColor.RED + "/rp deny");

@@ -1,6 +1,8 @@
 package ironcrystal.minecraftrp.contract;
 
 import ironcrystal.minecraftrp.Files;
+import ironcrystal.minecraftrp.occupations.Occupations;
+import ironcrystal.minecraftrp.player.OccupationalPlayer;
 import ironcrystal.minecraftrp.player.Shopkeeper;
 import ironcrystal.minecraftrp.player.Supplier;
 
@@ -11,9 +13,12 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class ContractManager {
 	
@@ -54,6 +59,18 @@ public class ContractManager {
 			itemList.add(itemInfo);
 		}
 		fileConfig.set("Items", itemList);
+		
+		List<ItemStack> progressItems = new ArrayList<ItemStack>();
+		for (ItemStack itemStack : items) {
+			progressItems.add(new ItemStack(itemStack.getType(), 0));
+		}
+		
+		List<String[]> progressList = new ArrayList<String[]>();
+		for (ItemStack itemStack : progressItems) {
+			String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
+			progressList.add(itemInfo);
+		}
+		fileConfig.set("Item Progress", progressList);
 		if (supplier == null || shopkeeper == null || timeStarted == 0) {
 			fileConfig.set("State", ContractState.NOTSTARTED.toString());
 		}else{
@@ -116,5 +133,41 @@ public class ContractManager {
 			}
 		}
 		return null;
+	}
+	
+	public static Contract getContract(int id) {
+		for (Contract contract : contractList) {
+			if (contract.getId() == id) {
+				return contract;
+			}
+		}
+		return null;
+	}
+	
+	public static ItemStack getCurrentContracts(UUID uuid) {
+		OccupationalPlayer occPlayer = new OccupationalPlayer(uuid);
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+		ItemMeta itemMeta = book.getItemMeta();
+		BookMeta bookMeta = null;
+		if (itemMeta instanceof BookMeta) {
+			bookMeta = (BookMeta) itemMeta;
+		}
+		if (occPlayer.getOccupation() == Occupations.SUPPLIER) {
+			Supplier supplier = new Supplier(uuid);
+			List<Integer> contractIDs = supplier.getContractIDs();
+			for (int id: contractIDs) {
+				bookMeta.addPage(getContract(id).getContractPage());
+			}
+		}
+		else if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
+			Shopkeeper shopkeeper = new Shopkeeper(uuid);
+			List<Integer> contractIDs = shopkeeper.getContractIDs();
+			for (int id: contractIDs) {
+				bookMeta.addPage(getContract(id).getContractPage());
+			}
+		}
+		bookMeta.setTitle("Contracts");
+		book.setItemMeta(bookMeta);
+		return book;
 	}
 }

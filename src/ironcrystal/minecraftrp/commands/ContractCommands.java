@@ -39,9 +39,9 @@ public class ContractCommands {
 
 			book.setItemMeta(bookMeta);
 			player.getInventory().addItem(book);
-			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent contract!");
+			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent blank contract!");
 		}else{
-			player.sendMessage(ChatColor.RED + "[MinecraftRP] Wait until your pending contract is accpepted or declined!");
+			player.sendMessage(ChatColor.RED + "[MinecraftRP] Wait until your pending contract is accepted or declined!");
 		}
 	}
 
@@ -94,12 +94,16 @@ public class ContractCommands {
 	@SuppressWarnings("deprecation")
 	public static void sendContractToPlayer(OccupationalPlayer player, String nameToSend) {
 		Contract contract = ContractManager.getUnStartedContract(player.getUUID());
+		if (contract != null) {
+			Bukkit.broadcastMessage("Contract is not null!");
+		}
 		OfflinePlayer offP = Bukkit.getOfflinePlayer(nameToSend);
 		if (offP.isOnline()) {
-			Player pl = Bukkit.getPlayer(nameToSend);
+			Player pl = offP.getPlayer();
 			OccupationalPlayer occPlayer = new OccupationalPlayer(pl.getUniqueId());
 			if (contract != null) {
 				if (contract.getShopkeeper() == null) {
+					Bukkit.broadcastMessage("Contract's Shopkeeper is null!");
 					if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
 						Shopkeeper shopkeeper = new Shopkeeper(pl.getUniqueId());
 						shopkeeper.sendContract(contract);
@@ -129,6 +133,16 @@ public class ContractCommands {
 			}
 		}else{
 			Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send the contract to an online player!");
+		}
+	}
+
+	public static void getCurrentContracts(OccupationalPlayer occPlayer) {
+		if (occPlayer.getOccupation() == Occupations.SHOPKEEPER || occPlayer.getOccupation() == Occupations.SUPPLIER) {
+			Player player = Bukkit.getPlayer(occPlayer.getUUID());
+			player.getInventory().addItem(ContractManager.getCurrentContracts(occPlayer.getUUID()));
+			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contracts Book Recieved");
+		}else{
+			Bukkit.getPlayer(occPlayer.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must be a shopkeeper or supplier to have contracts!");
 		}
 	}
 }

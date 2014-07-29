@@ -127,7 +127,7 @@ public class OccupationalCommands implements CommandExecutor {
 					}
 					else if (args[0].equalsIgnoreCase("contract")) {
 						if (args.length == 1) {
-							ContractCommands.sendContract(player);
+							ContractCommands.getCurrentContracts(occPlayer);
 						}else{
 							if (args[1].equalsIgnoreCase("accept")) {
 								ContractCommands.acceptContract(occPlayer);
@@ -141,6 +141,9 @@ public class OccupationalCommands implements CommandExecutor {
 								}else{
 									player.sendMessage(ChatColor.RED + "[MinecraftRP] Error: Syntax: /rp contract send <player>");
 								}
+							}
+							else if (args[1].equalsIgnoreCase("create")) {
+								ContractCommands.sendContract(player);
 							}
 						}
 					}

@@ -149,7 +149,6 @@ public class CreateContract implements Listener {
 							while (amount > 64) {
 								if (items.size() < 8) {
 									ItemStack newItem = new ItemStack(material, 64);
-									player.getInventory().addItem(newItem);
 									items.add(newItem);
 									amount = amount - 64;
 								}else{
@@ -161,7 +160,6 @@ public class CreateContract implements Listener {
 								ItemStack newItem = new ItemStack(material, amount);
 								items.add(newItem);
 								goodItems = true;
-								player.getInventory().addItem(newItem);
 							}else{
 								player.sendMessage(ChatColor.RED + "[MinecraftRP] Too many items!  Ignoring");
 							}

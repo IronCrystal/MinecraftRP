@@ -24,6 +24,7 @@ public class Contract {
 	private Shopkeeper shopkeeper;
 	private double price;
 	private List<ItemStack> items;
+	private List<ItemStack> itemProgress;
 	private long timeStarted;
 	private long timeLimit;
 	private int id;
@@ -36,6 +37,7 @@ public class Contract {
 	protected Contract(int id) {
 		this.id = id;
 		this.items = new ArrayList<ItemStack>();
+		this.itemProgress = new ArrayList<ItemStack>();
 		this.file = Files.getContractFile(id);
 		if (!this.file.exists()) {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: A contract object was created but the file has not been created!");
@@ -73,6 +75,16 @@ public class Contract {
 				items.add(item);
 			}
 		}
+		if (fileConfig.getList("Item Progress") != null) {
+			List<List<String>> itemList = (List<List<String>>) fileConfig.getList("Item Progress");
+			for (List<String> stringArray : itemList) {
+				String itemName = stringArray.get(0);
+				String stringAmount = stringArray.get(1);
+				int amount = Integer.parseInt(stringAmount);
+				ItemStack item = new ItemStack(Material.getMaterial(itemName), amount);
+				itemProgress.add(item);
+			}
+		}
 	}
 
 	public ItemStack getBook() {
@@ -89,7 +101,7 @@ public class Contract {
 		}
 		return item;
 	}
-	
+
 	public String getContractPage() {
 		String newPage = "";
 		if (getShopkeeper() != null) {
@@ -100,12 +112,31 @@ public class Contract {
 		}
 		newPage = newPage + "Price: " + price + "\nTime: " + getTimeString(timeLimit) + "\nItems:\n";
 		for (int i = 0; i < items.size(); i++) {
-			newPage = newPage + items.get(i).getType().toString() + " x" + items.get(i).getAmount();
+			newPage = newPage + items.get(i).getType().toString() + " x" + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount();
 			if (i != items.size() - 1) {
 				newPage = newPage + "\n";
 			}
 		}
 		return newPage;
+	}
+	
+	public void addItemProgress(ItemStack item) {
+		for (ItemStack i : itemProgress) {
+			i.setAmount(item.getAmount());
+			List<String[]> itemList = new ArrayList<String[]>();
+			for (ItemStack itemStack : itemProgress) {
+				String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
+				itemList.add(itemInfo);
+			}
+			fileConfig.set("Item Progress", itemList);
+		}
+	}
+
+	public Long getTimeLeft() {
+		if (getTimeStarted() != 0) {
+			return timeLimit - (System.currentTimeMillis() - getTimeStarted());
+		}
+		return timeLimit;
 	}
 
 	public String getTimeString(Long time) {
