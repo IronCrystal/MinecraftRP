@@ -44,9 +44,10 @@ public class Files {
 		}
 		Contracts = new File("plugins/MinecraftRP/contracts/Contracts.yml");
 		if (!Contracts.exists()) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Creating Contracts File");
 			FileConfiguration fileConfig = new YamlConfiguration();
 			fileConfig.set("Next ID", 0);
-			saveFile(Contracts, new YamlConfiguration());
+			saveFile(Contracts, fileConfig);
 		}
 		Config = new File("plugins/MinecraftRP/config.yml");
 		if (!Config.exists()) {

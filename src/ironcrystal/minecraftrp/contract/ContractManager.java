@@ -21,13 +21,13 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ContractManager {
-	
+
 	public static List<Contract> contractList;
 	private static File file;
 	private static int nextID;
 
 	private static FileConfiguration fileConfig;
-	
+
 	public static void initializeTownList() {
 		ContractManager.contractList = new ArrayList<Contract>();
 		ContractManager.file = Files.Contracts;
@@ -41,15 +41,19 @@ public class ContractManager {
 		nextID = fileConfig.getInt("Next ID");
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] " + ContractManager.contractList.size() + " contracts loaded.");
 	}
-	
+
 	public static Contract createNewContract(Supplier supplier, Shopkeeper shopkeeper, double price, long timeStarted, long timeLimit, List<ItemStack> items) {
 		File contractFile = createContractFile(nextID);
 		FileConfiguration fileConfig = new YamlConfiguration();
 		Files.loadFile(contractFile, fileConfig);
-		if (supplier != null)
-		fileConfig.set("Supplier", supplier.getUUID().toString());
-		if (shopkeeper != null)
-		fileConfig.set("Shopkeeper", shopkeeper.getUUID().toString());
+		if (supplier != null) {
+			supplier.addContract(nextID);
+			fileConfig.set("Supplier", supplier.getUUID().toString());
+		}
+		if (shopkeeper != null) {
+			shopkeeper.addContract(nextID);
+			fileConfig.set("Shopkeeper", shopkeeper.getUUID().toString());
+		}
 		fileConfig.set("Price", price);
 		fileConfig.set("Time Started", timeStarted);
 		fileConfig.set("Time Limit", timeLimit);
@@ -59,12 +63,12 @@ public class ContractManager {
 			itemList.add(itemInfo);
 		}
 		fileConfig.set("Items", itemList);
-		
+
 		List<ItemStack> progressItems = new ArrayList<ItemStack>();
 		for (ItemStack itemStack : items) {
 			progressItems.add(new ItemStack(itemStack.getType(), 0));
 		}
-		
+
 		List<String[]> progressList = new ArrayList<String[]>();
 		for (ItemStack itemStack : progressItems) {
 			String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
@@ -82,7 +86,7 @@ public class ContractManager {
 		incrementID();
 		return contract;
 	}
-	
+
 	private static File createContractFile(int id) {
 		String path = "plugins/MinecraftRP/contracts/" + id + ".yml";
 		File file = new File(path);
@@ -92,13 +96,13 @@ public class ContractManager {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] File for contract " + id + " created succesfully.");
 		return file;
 	}
-	
+
 	private static void incrementID() {
 		Files.loadFile(Files.Contracts, fileConfig);
 		nextID++;
 		fileConfig.set("Next ID", nextID);
 	}
-	
+
 	private static void addContract(Contract contract) {
 		List<Integer> ids = new ArrayList<Integer>();
 		if (contractList == null) {
@@ -111,7 +115,7 @@ public class ContractManager {
 		ContractManager.fileConfig.set("Contracts", ids);
 		Files.saveFile(ContractManager.file, fileConfig);
 	}
-	
+
 	/**
 	 * Get the unstarted contract of a player
 	 * @param UUID uuid
@@ -134,7 +138,7 @@ public class ContractManager {
 		}
 		return null;
 	}
-	
+
 	public static Contract getContract(int id) {
 		for (Contract contract : contractList) {
 			if (contract.getId() == id) {
@@ -143,7 +147,7 @@ public class ContractManager {
 		}
 		return null;
 	}
-	
+
 	public static ItemStack getCurrentContracts(UUID uuid) {
 		OccupationalPlayer occPlayer = new OccupationalPlayer(uuid);
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
@@ -155,13 +159,22 @@ public class ContractManager {
 		if (occPlayer.getOccupation() == Occupations.SUPPLIER) {
 			Supplier supplier = new Supplier(uuid);
 			List<Integer> contractIDs = supplier.getContractIDs();
+			if (contractIDs.size() == 0) {
+				bookMeta.addPage(ChatColor.RED + "You don't have any contracts!");
+			}
 			for (int id: contractIDs) {
-				bookMeta.addPage(getContract(id).getContractPage());
+				Contract contract = getContract(id);
+				if (contract.getState() == ContractState.NOTSTARTED || contract.getState() == ContractState.INPROGRESS) {
+					bookMeta.addPage(contract.getContractPage());
+				}
 			}
 		}
 		else if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
 			Shopkeeper shopkeeper = new Shopkeeper(uuid);
 			List<Integer> contractIDs = shopkeeper.getContractIDs();
+			if (contractIDs.size() == 0) {
+				bookMeta.addPage(ChatColor.RED + "You don't have any contracts!");
+			}
 			for (int id: contractIDs) {
 				bookMeta.addPage(getContract(id).getContractPage());
 			}

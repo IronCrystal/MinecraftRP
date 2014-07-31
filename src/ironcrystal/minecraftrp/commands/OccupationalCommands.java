@@ -203,6 +203,9 @@ public class OccupationalCommands implements CommandExecutor {
 								}
 
 							}
+							else if (args[1].equalsIgnoreCase("kick")) {
+								player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Not implemented yet!");
+							}
 							else{
 								sendTownHelp(player);
 							}
@@ -257,5 +260,10 @@ public class OccupationalCommands implements CommandExecutor {
 		player.sendMessage(ChatColor.GREEN + "/rp town list          | lists the top towns");
 		player.sendMessage(ChatColor.GREEN + "/rp town setowner | change the mayor of your town");
 		player.sendMessage(ChatColor.GREEN + "/rp town startvote | starts a public election for a new mayor of your town");
+		player.sendMessage(ChatColor.GREEN + "/rp town whitelist      | display whitelist");
+		player.sendMessage(ChatColor.GREEN + "/rp town whitelist help | whitelist commands");
+		player.sendMessage(ChatColor.GREEN + "/rp town blacklist      | display whitelist");
+		player.sendMessage(ChatColor.GREEN + "/rp town blacklist help | whitelist commands");
+		player.sendMessage(ChatColor.GREEN + "/rp kick <player>         | kicks a player from your town");
 	}
 }

@@ -78,11 +78,15 @@ public class ContractCommands {
 			Player p = Bukkit.getPlayer(occPlayer.getUUID());
 			p.sendMessage(ChatColor.GREEN + "[MinecraftRP] You accepted the contract!");
 			if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
-				contract.setShopkeeper(new Shopkeeper(occPlayer.getUUID()));
+				Shopkeeper shopkeeper = new Shopkeeper(occPlayer.getUUID());
+				shopkeeper.addContract(contract.getId());
+				contract.setShopkeeper(shopkeeper);
 				Bukkit.getPlayer(contract.getSupplier().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] " + p.getName() + " accepted your contract!");
 			}
 			else if (occPlayer.getOccupation() == Occupations.SUPPLIER) {
-				contract.setSupplier(new Supplier(occPlayer.getUUID()));
+				Supplier supplier = new Supplier(occPlayer.getUUID());
+				supplier.addContract(contract.getId());
+				contract.setSupplier(supplier);
 				Bukkit.getPlayer(contract.getShopkeeper().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] " + p.getName() + " accepted your contract!");
 			}
 			PlayersAcceptingContract.remove(occPlayer.getUUID());
@@ -126,6 +130,8 @@ public class ContractCommands {
 					}else{
 						Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send this contract to a supplier!");
 					}
+				}else{
+					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Contract tried sending, but neither shopkeeper and supplier are null");
 				}
 			}else{
 				Player p = Bukkit.getPlayer(player.getUUID());

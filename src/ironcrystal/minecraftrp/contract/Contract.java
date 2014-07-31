@@ -45,6 +45,7 @@ public class Contract {
 		}
 		this.fileConfig = new YamlConfiguration();
 		Files.loadFile(file, fileConfig);
+		this.state = ContractState.getContractStateByString(fileConfig.getString("State"));
 		if (fileConfig.getString("Supplier") != null) {
 			UUID supplierUUID = UUID.fromString(fileConfig.getString("Supplier"));
 			this.supplier = new Supplier(supplierUUID);
@@ -104,22 +105,36 @@ public class Contract {
 
 	public String getContractPage() {
 		String newPage = "";
+		newPage = newPage + ChatColor.BLUE + getState().toString() + "\n";
 		if (getShopkeeper() != null) {
-			newPage = "Shopkeeper: " + getShopkeeper().getLastKnownName() + "\n";
+			newPage = newPage + ChatColor.BLUE + "Shop: " + ChatColor.BLACK + getShopkeeper().getLastKnownName() + "\n";
 		}
 		if (getSupplier() != null) {
-			newPage = "Supplier: " + getSupplier().getLastKnownName() + "\n";
+			newPage = newPage + ChatColor.BLUE + "Supply: " + ChatColor.BLACK + getSupplier().getLastKnownName() + "\n";
 		}
-		newPage = newPage + "Price: " + price + "\nTime: " + getTimeString(timeLimit) + "\nItems:\n";
+		newPage = newPage + ChatColor.BLUE + "Price: " + ChatColor.BLACK + price + ChatColor.BLUE + "\nTime: " + ChatColor.BLACK
+				+ getTimeString(timeLimit) + ChatColor.BLUE + "\nItems:\n" + ChatColor.BLACK;
 		for (int i = 0; i < items.size(); i++) {
-			newPage = newPage + items.get(i).getType().toString() + " x" + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount();
+			ChatColor color = null;
+			int progress = itemProgress.get(i).getAmount();
+			int total = items.get(i).getAmount();
+			double percent = (progress * 1.0 )/ total;
+			if (percent < 0.5) {
+				color = ChatColor.RED;
+			}
+			else if (percent < 0.75) {
+				color = ChatColor.GOLD;
+			}else{
+				color = ChatColor.GREEN;
+			}
+			newPage = newPage + items.get(i).getType().toString() + " x" + color + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount();
 			if (i != items.size() - 1) {
 				newPage = newPage + "\n";
 			}
 		}
 		return newPage;
 	}
-	
+
 	public void addItemProgress(ItemStack item) {
 		for (ItemStack i : itemProgress) {
 			i.setAmount(item.getAmount());

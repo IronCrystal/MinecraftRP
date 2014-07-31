@@ -31,6 +31,8 @@ public class Shopkeeper extends OccupationalPlayer {
 
 	public void setContractIDs(List<Integer> contractIDs) {
 		this.contractIDs = contractIDs;
+		this.getConfig().set("Contracts", contractIDs);
+		Files.saveFile(this.getFile(), this.getConfig());
 	}
 	
 	public void addContract(int id) {

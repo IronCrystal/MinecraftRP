@@ -129,7 +129,7 @@ public class CreateContract implements Listener {
 					continue;
 				}
 				else if (passedItemLine) {
-					if (items.size() < 8) {
+					if (items.size() < 7) {
 						line = line.trim();
 						String[] item = line.split(" ");
 						String itemName = item[0];
@@ -147,7 +147,7 @@ public class CreateContract implements Listener {
 						int amount = Integer.parseInt(itemAmount);
 						if (material != null) {
 							while (amount > 64) {
-								if (items.size() < 8) {
+								if (items.size() < 7) {
 									ItemStack newItem = new ItemStack(material, 64);
 									items.add(newItem);
 									amount = amount - 64;
@@ -156,7 +156,7 @@ public class CreateContract implements Listener {
 									break;
 								}
 							}
-							if (items.size() < 8) {
+							if (items.size() < 7) {
 								ItemStack newItem = new ItemStack(material, amount);
 								items.add(newItem);
 								goodItems = true;
