@@ -112,17 +112,22 @@ public class MayorCommands {
 			double baseCost = config.getDouble("Cost of Expanding a Village Per Chunk");
 			int numberOfChunks = radius * 8;
 			double cost = baseCost * numberOfChunks;
-
-			if (MinecraftRP.econ.getBalance(offP) >= cost) {
-				town.expandTown();
-				p.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have expanded your town!");
-				radius = town.getRadius();
-				int sideLength = 1 + 2 * radius;
-				p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Your town has a " + radius +" chunk radius, for a total of " + sideLength + "x" + sideLength + " chunks.");
-				p.sendMessage(ChatColor.BLUE + "[MinecraftRP] " + cost + " has been removed from your account.");
+			if ((radius - 1) <  7 || ((radius - 1 < 9) && p.hasPermission("rank.donator")) || ((radius - 1 < 11) && p.hasPermission("rank.supporter"))
+					|| ((radius - 1 < 13) && p.hasPermission("rank.sponsor")) || ((radius - 1 < 15) && p.hasPermission("rank.vip"))
+					|| p.hasPermission("staff.owner ")) {
+				if (MinecraftRP.econ.getBalance(offP) >= cost) {
+					town.expandTown();
+					p.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have expanded your town!");
+					radius = town.getRadius();
+					int sideLength = 1 + 2 * radius;
+					p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Your town has a " + radius +" chunk radius, for a total of " + sideLength + "x" + sideLength + " chunks.");
+					p.sendMessage(ChatColor.BLUE + "[MinecraftRP] " + cost + " has been removed from your account.");
+				}else{
+					p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have enough money!");
+					p.sendMessage(ChatColor.RED + "[MinecraftRP] It costs " + cost + " dollars to expand your village.");
+				}
 			}else{
-				p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have enough money!");
-				p.sendMessage(ChatColor.RED + "[MinecraftRP] It costs " + cost + " dollars to expand your village.");
+				p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have the permissions to expand this far!");
 			}
 		}else{
 			p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't own a town!");
