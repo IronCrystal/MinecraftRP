@@ -47,6 +47,9 @@ public class TownManager {
 		fileConfig.set("Radius", radius);
 		fileConfig.set("Central Chunk", centerChunkLoc);
 		fileConfig.set("Residents", new ArrayList<String>());
+		fileConfig.set("White List", new ArrayList<String>());
+		fileConfig.set("Black List", new ArrayList<String>());
+		fileConfig.set("White List Enabled", false);
 		fileConfig.set("World", world.getName());
 		Files.saveFile(townFile, fileConfig);
 		Town town = new Town(name);

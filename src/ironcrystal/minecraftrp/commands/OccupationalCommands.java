@@ -120,7 +120,90 @@ public class OccupationalCommands implements CommandExecutor {
 							}
 							else if (args[1].equalsIgnoreCase("run")) {
 								MayorCommands.run(occPlayer);
-							}else{
+							}
+							else if (args[1].equalsIgnoreCase("whitelist")) {
+								if (occPlayer.getOccupation() == Occupations.MAYOR) {
+									Mayor mayor = new Mayor(occPlayer.getUUID());
+									if (args.length == 2) {
+										MayorCommands.getWhiteList(mayor);
+									}
+									else if (args.length == 3) {
+										if (args[2].equalsIgnoreCase("add")) {
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Error: Syntax " + ChatColor.GREEN + "/rp town whitelist add <player>");
+										}
+										else if (args[2].equalsIgnoreCase("remove")) {
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Error: Syntax " + ChatColor.GREEN + "/rp town whitelist remove <player>");
+										}
+										else if (args[2].equalsIgnoreCase("enable")) {
+											Town town = TownManager.getTown(mayor);
+											if (town != null) {
+												town.setWhiteListEnabled(true);
+												player.sendMessage(ChatColor.GREEN + "[MinecraftRP] White List enabled for " + mayor.getTown().getName());
+											}else{
+												player.sendMessage(ChatColor.RED + "[MinecraftRP] You must be the owner of a town!");
+											}
+										}
+										else if (args[2].equalsIgnoreCase("disable")) {
+											Town town = TownManager.getTown(mayor);
+											if (town != null) {
+												town.setWhiteListEnabled(false);
+												player.sendMessage(ChatColor.GREEN + "[MinecraftRP] White List disabled for " + mayor.getTown().getName());
+											}else{
+												player.sendMessage(ChatColor.RED + "[MinecraftRP] You must be the owner of a town!");
+											}
+										}else{
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Available commands:");
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] /rp town whitelist add <player>");
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] /rp town whitelist remove <player>");
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] /rp town whitelist enable");
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] /rp town whitelist disable");
+										}
+									}
+									else if (args.length == 4) {
+										if (args[2].equalsIgnoreCase("add")) {
+											MayorCommands.addPlayerToWhiteList(mayor, args[3]);
+										}
+										else if (args[2].equalsIgnoreCase("remove")) {
+											MayorCommands.removePlayerFromWhiteList(mayor, args[3]);
+										}else{
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Available commmands: " + ChatColor.GREEN + "/rp town whitelist add/remove/enable/disable <player>");
+										}
+									}
+								}else{
+									player.sendMessage(ChatColor.RED + "[MinecraftRP] You must be a mayor to run this command!");
+								}
+
+							}
+							else if (args[1].equalsIgnoreCase("blacklist")) {
+								if (occPlayer.getOccupation() == Occupations.MAYOR) {
+									Mayor mayor = new Mayor(occPlayer.getUUID());
+									if (args.length == 2) {
+										MayorCommands.getBlackList(mayor);
+									}
+									else if (args.length == 3) {
+										if (args[2].equalsIgnoreCase("add")) {
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Error: Syntax " + ChatColor.GREEN + "/rp town blacklist add <player>");
+										}
+										else if (args[2].equalsIgnoreCase("remove")) {
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Error: Syntax " + ChatColor.GREEN + "/rp town blacklist remove <player>");
+										}
+									}
+									else if (args.length == 4) {
+										if (args[2].equalsIgnoreCase("add")) {
+											MayorCommands.addPlayerToBlackList(mayor, args[3]);
+										}
+										else if (args[2].equalsIgnoreCase("remove")) {
+											MayorCommands.removePlayerFromBlackList(mayor, args[3]);
+										}else{
+											player.sendMessage(ChatColor.RED + "[MinecraftRP] Available commmands: " + ChatColor.GREEN + "/rp town blacklist add/remove <player>");
+										}
+									}
+								}else{
+									player.sendMessage(ChatColor.RED + "[MinecraftRP] You must be a mayor to run this command!");
+								}
+
+							}
+							else{
 								sendTownHelp(player);
 							}
 						}

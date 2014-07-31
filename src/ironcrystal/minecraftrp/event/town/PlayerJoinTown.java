@@ -43,6 +43,18 @@ public class PlayerJoinTown implements Listener {
 		}
 		Mayor mayor = new Mayor(uuid);
 		Town town = TownManager.getTown(mayor);
+		if (town.isWhiteListEnabled()) {
+			if (!town.getWhiteList().contains(p.getUniqueId().toString())) {
+				event.setCancelled(true);
+				p.sendMessage(ChatColor.RED + "[MinecraftRP] You are not on this town's whitelist!");
+				return;
+			}
+		}
+		if (town.getBlackList().contains(p.getUniqueId().toString())) {
+			event.setCancelled(true);
+			p.sendMessage(ChatColor.RED + "[MinecraftRP] You are on this town's blacklist!");
+			return;
+		}
 		FileConfiguration fileConfig = new YamlConfiguration();
 		Files.loadFile(player.getFile(), fileConfig);
 		fileConfig.set("Resident of", town.getName());

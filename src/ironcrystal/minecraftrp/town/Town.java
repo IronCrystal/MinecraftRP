@@ -35,6 +35,9 @@ public class Town {
 	private World world;
 	private List<Integer> chunkLoc;
 	private List<String> residents;
+	private List<String> blackList;
+	private List<String> whiteList;
+	private boolean whiteListEnabled;
 	
 	private FileConfiguration fileConfig;
 	
@@ -53,6 +56,9 @@ public class Town {
 		this.world = Bukkit.getWorld(fileConfig.getString("World"));
 		this.chunkLoc = fileConfig.getIntegerList("Central Chunk");
 		this.residents = fileConfig.getStringList("Residents");
+		this.blackList = fileConfig.getStringList("White List");
+		this.whiteList = fileConfig.getStringList("Black List");
+		this.whiteListEnabled = fileConfig.getBoolean("White List Enabled");
 	}
 	
 	public void addResident(UUID uuid) {
@@ -199,5 +205,59 @@ public class Town {
 
 	public void setWorld(World world) {
 		this.world = world;
+	}
+
+	public List<String> getBlackList() {
+		return blackList;
+	}
+
+	public void setBlackList(List<String> blackList) {
+		this.blackList = blackList;
+		fileConfig.set("Black List", blackList);
+		Files.saveFile(file, fileConfig);
+	}
+
+	public List<String> getWhiteList() {
+		return whiteList;
+	}
+
+	public void setWhiteList(List<String> whiteList) {
+		this.whiteList = whiteList;
+		fileConfig.set("White List", whiteList);
+		Files.saveFile(file, fileConfig);
+	}
+
+	public boolean isWhiteListEnabled() {
+		return whiteListEnabled;
+	}
+
+	public void setWhiteListEnabled(boolean whiteListEnabled) {
+		this.whiteListEnabled = whiteListEnabled;
+		fileConfig.set("White List Enabled", whiteListEnabled);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public void addPlayerToWhiteList(UUID uuid) {
+		whiteList.add(uuid.toString());
+		fileConfig.set("White List", whiteList);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public void removePlayerFromWhiteList(UUID uuid) {
+		whiteList.remove(uuid.toString());
+		fileConfig.set("White List", whiteList);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public void addPlayerToBlackList(UUID uuid) {
+		blackList.add(uuid.toString());
+		fileConfig.set("Black List", blackList);
+		Files.saveFile(file, fileConfig);
+	}
+	
+	public void removePlayerFromBlackList(UUID uuid) {
+		blackList.remove(uuid.toString());
+		fileConfig.set("Black List", blackList);
+		Files.saveFile(file, fileConfig);
 	}
 }

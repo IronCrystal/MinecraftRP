@@ -253,4 +253,112 @@ public class MayorCommands {
 			Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] There isn't an election going on!");
 		}
 	}
+	
+	public static void getBlackList(Mayor mayor) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(mayor.getUUID());
+			player.sendMessage(ChatColor.RED + "[MinecraftRP] " + town.getName() + " blacklist:");
+			List<String> uuids = town.getBlackList();
+			for (String uuid: uuids) {
+				File file = Files.getPlayerFile(UUID.fromString(uuid));
+				FileConfiguration fileConfig = new YamlConfiguration();
+				Files.loadFile(file, fileConfig);
+				String name = fileConfig.getString("Last Known Name");
+				player.sendMessage(ChatColor.RED + name);
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
+	
+	public static void getWhiteList(Mayor mayor) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(mayor.getUUID());
+			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + town.getName() + " whitelist:");
+			List<String> uuids = town.getWhiteList();
+			for (String uuid: uuids) {
+				File file = Files.getPlayerFile(UUID.fromString(uuid));
+				FileConfiguration fileConfig = new YamlConfiguration();
+				Files.loadFile(file, fileConfig);
+				String name = fileConfig.getString("Last Known Name");
+				player.sendMessage(ChatColor.GREEN + name);
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void removePlayerFromBlackList(Mayor mayor, String name) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(name);
+			if (player != null) {
+				UUID uuid = player.getUniqueId();
+				town.removePlayerFromBlackList(uuid);
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] Succesfully removed " + name + " from your blacklist!");
+				player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have been removed from the blacklist on " + town.getName());
+			}else{
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] The player must be online!");
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void removePlayerFromWhiteList(Mayor mayor, String name) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(name);
+			if (player != null) {
+				UUID uuid = player.getUniqueId();
+				town.removePlayerFromWhiteList(uuid);
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] Succesfully removed " + name + " from your whitelist!");
+				player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have been removed from the whitelist on " + town.getName());
+			}else{
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] The player must be online!");
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void addPlayerToBlackList(Mayor mayor, String name) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(name);
+			if (player != null) {
+				UUID uuid = player.getUniqueId();
+				town.addPlayerToBlackList(uuid);
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] Succesfully added " + name + " to your blacklist!");
+				player.sendMessage(ChatColor.RED + "[MinecraftRP] You have been blacklisted on " + town.getName());
+			}else{
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] The player must be online!");
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void addPlayerToWhiteList(Mayor mayor, String name) {
+		Town town = TownManager.getTown(mayor);
+		if (town != null) {
+			Player player = Bukkit.getPlayer(name);
+			if (player != null) {
+				UUID uuid = player.getUniqueId();
+				town.addPlayerToWhiteList(uuid);
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] Succesfully added " + name + " to your whitelist!");
+				player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have been whitelisted on " + town.getName());
+			}else{
+				Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] The player must be online!");
+			}
+		}else{
+			Bukkit.getPlayer(mayor.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You do not own a town!");
+		}
+	}
 }
