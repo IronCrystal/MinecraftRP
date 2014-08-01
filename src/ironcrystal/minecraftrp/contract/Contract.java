@@ -11,7 +11,9 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +31,8 @@ public class Contract {
 	private long timeLimit;
 	private int id;
 	private ContractState state;
+	private Block shopChest;
+	private Block supplyChest;
 
 	private File file;
 	private FileConfiguration fileConfig;
@@ -85,6 +89,22 @@ public class Contract {
 				ItemStack item = new ItemStack(Material.getMaterial(itemName), amount);
 				itemProgress.add(item);
 			}
+		}
+		if (fileConfig.getIntegerList("Shop Chest") != null && fileConfig.getString("Shop Chest World") != null) {
+			List<Integer> shopBlockLoc = fileConfig.getIntegerList("Shop Chest");
+			String worldName = fileConfig.getString("Shop Chest World");
+			Location loc = new Location(Bukkit.getWorld(worldName), shopBlockLoc.get(0), shopBlockLoc.get(1), shopBlockLoc.get(2));
+			this.shopChest = loc.getBlock();
+		}else{
+			this.shopChest = null;
+		}
+		if (fileConfig.getIntegerList("Supply Chest") != null && fileConfig.getString("Supply Chest World") != null) {
+			List<Integer> supplyBlockLoc = fileConfig.getIntegerList("Supply Chest");
+			String worldName = fileConfig.getString("Supply Chest World");
+			Location loc = new Location(Bukkit.getWorld(worldName), supplyBlockLoc.get(0), supplyBlockLoc.get(1), supplyBlockLoc.get(2));
+			this.supplyChest = loc.getBlock();
+		}else{
+			this.supplyChest = null;
 		}
 	}
 
@@ -240,4 +260,35 @@ public class Contract {
 		Files.saveFile(file, fileConfig);
 	}
 
+	public Block getShopChest() {
+		return shopChest;
+	}
+
+	public void setShopChest(Block shopChest) {
+		this.shopChest = shopChest;
+		Location loc = shopChest.getLocation();
+		List<Integer> coords = new ArrayList<Integer>();
+		coords.add(loc.getBlockX());
+		coords.add(loc.getBlockY());
+		coords.add(loc.getBlockZ());
+		fileConfig.set("Shop Chest", coords);
+		fileConfig.set("Shop Chest World", loc.getWorld().getName());
+		Files.saveFile(file, fileConfig);
+	}
+
+	public Block getSupplyChest() {
+		return supplyChest;
+	}
+
+	public void setSupplyChest(Block supplyChest) {
+		this.supplyChest = supplyChest;
+		Location loc = supplyChest.getLocation();
+		List<Integer> coords = new ArrayList<Integer>();
+		coords.add(loc.getBlockX());
+		coords.add(loc.getBlockY());
+		coords.add(loc.getBlockZ());
+		fileConfig.set("Supply Chest", coords);
+		fileConfig.set("Supply Chest World", loc.getWorld().getName());
+		Files.saveFile(file, fileConfig);
+	}
 }

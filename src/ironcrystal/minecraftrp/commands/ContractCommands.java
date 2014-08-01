@@ -32,9 +32,9 @@ public class ContractCommands {
 			//bookMeta.setTitle(ChatColor.GREEN + "Contract");
 			//bookMeta.setAuthor(ChatColor.GRAY + "IronCrystal");
 
-			bookMeta.addPage(ChatColor.ITALIC + "Format as follows:\nPrice: <amount>\nTime: <amount>[h:d]\nItems:\n<ItemName> x<amount>\n" 
-					+ "DO NOT WRITE ON THIS PAGE\nDO NOT WRITE ON THIS PAGE\nDO NOT WRITE ON THIS PAGE\nDO NOT WRITE ON THIS PAGE\n" +
-					"DO NOT WRITE ON THIS PAGE\n" + ChatColor.RESET);
+			bookMeta.addPage(ChatColor.ITALIC + "Format as follows:\nPrice: <amount>\nTime: <amount>[h:d]\nItems:\n<ItemName> x<amount>\n"
+					+ "Please Start Writing On The Next Page" 
+					+ "\n\n\n\n\n\n\n\n\n" + ChatColor.RESET);
 			//bookMeta.setPage(1, "Price:\nTime:\nItems\n");
 
 			book.setItemMeta(bookMeta);
@@ -72,9 +72,7 @@ public class ContractCommands {
 
 	public static void acceptContract(OccupationalPlayer occPlayer) {
 		if (PlayersAcceptingContract.containsKey(occPlayer.getUUID())) {
-			Contract contract = PlayersAcceptingContract.get(occPlayer.getUUID());
-			contract.setState(ContractState.INPROGRESS);
-			contract.setTimeStarted(System.currentTimeMillis());
+			Contract contract = PlayersAcceptingContract.get(occPlayer.getUUID());			
 			Player p = Bukkit.getPlayer(occPlayer.getUUID());
 			p.sendMessage(ChatColor.GREEN + "[MinecraftRP] You accepted the contract!");
 			if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
@@ -90,6 +88,7 @@ public class ContractCommands {
 				Bukkit.getPlayer(contract.getShopkeeper().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] " + p.getName() + " accepted your contract!");
 			}
 			PlayersAcceptingContract.remove(occPlayer.getUUID());
+			ContractManager.giveContractPartnersChests(contract);
 		}else{
 			Bukkit.getPlayer(occPlayer.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You don't have any pending contracts!");
 		}
@@ -98,16 +97,12 @@ public class ContractCommands {
 	@SuppressWarnings("deprecation")
 	public static void sendContractToPlayer(OccupationalPlayer player, String nameToSend) {
 		Contract contract = ContractManager.getUnStartedContract(player.getUUID());
-		if (contract != null) {
-			Bukkit.broadcastMessage("Contract is not null!");
-		}
 		OfflinePlayer offP = Bukkit.getOfflinePlayer(nameToSend);
 		if (offP.isOnline()) {
 			Player pl = offP.getPlayer();
 			OccupationalPlayer occPlayer = new OccupationalPlayer(pl.getUniqueId());
 			if (contract != null) {
 				if (contract.getShopkeeper() == null) {
-					Bukkit.broadcastMessage("Contract's Shopkeeper is null!");
 					if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
 						Shopkeeper shopkeeper = new Shopkeeper(pl.getUniqueId());
 						shopkeeper.sendContract(contract);
@@ -147,6 +142,16 @@ public class ContractCommands {
 			Player player = Bukkit.getPlayer(occPlayer.getUUID());
 			player.getInventory().addItem(ContractManager.getCurrentContracts(occPlayer.getUUID()));
 			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contracts Book Recieved");
+		}else{
+			Bukkit.getPlayer(occPlayer.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must be a shopkeeper or supplier to have contracts!");
+		}
+	}
+	
+	public static void getContractHistory(OccupationalPlayer occPlayer) {
+		if (occPlayer.getOccupation() == Occupations.SHOPKEEPER || occPlayer.getOccupation() == Occupations.SUPPLIER) {
+			Player player = Bukkit.getPlayer(occPlayer.getUUID());
+			player.getInventory().addItem(ContractManager.getContractHistory(occPlayer.getUUID()));
+			player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contract History Book Received");
 		}else{
 			Bukkit.getPlayer(occPlayer.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must be a shopkeeper or supplier to have contracts!");
 		}

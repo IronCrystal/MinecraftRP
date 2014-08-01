@@ -231,6 +231,11 @@ public class OccupationalCommands implements CommandExecutor {
 							else if (args[1].equalsIgnoreCase("create")) {
 								ContractCommands.sendContract(player);
 							}
+							else if (args[1].equalsIgnoreCase("history")) {
+								ContractCommands.getContractHistory(occPlayer);
+							}else{
+								player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Reminder set here to make a help for contracts");
+							}
 						}
 					}
 					else if (args[0].equalsIgnoreCase("confirm")) {

@@ -30,6 +30,7 @@ public class MinecraftRP extends JavaPlugin {
 		Listeners.registerEvents(this);
 		TownManager.initializeTownList();
 		ContractManager.initializeTownList();
+		ContractManager.runTimers(this);
 		/**
 		 * Commands
 		 */

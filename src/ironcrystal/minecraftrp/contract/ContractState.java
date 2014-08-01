@@ -6,6 +6,8 @@ public enum ContractState {
 	DECLINED,
 	INPROGRESS,
 	FINISHED_SUCCESFULLY,
+	CANCELED_BY_SUPPLIER,
+	CANCELED_BY_SHOPKEEPER,
 	FINISHED_FAILED;
 
 	@Override
@@ -16,6 +18,8 @@ public enum ContractState {
 		case INPROGRESS: return "In Progress";
 		case FINISHED_SUCCESFULLY: return "Finished Succesfully";
 		case FINISHED_FAILED: return "Finished Failed";
+		case CANCELED_BY_SUPPLIER: return "Canceled By Supplier";
+		case CANCELED_BY_SHOPKEEPER: return "Canceled By Shopkeeper";
 		}
 		return null;
 	}
@@ -32,6 +36,10 @@ public enum ContractState {
 		case "Finished Succesfully": return ContractState.FINISHED_SUCCESFULLY;
 		case "finished failed":
 		case "Finished Failed": return ContractState.FINISHED_FAILED;
+		case "canceled sy supplier":
+		case "Canceled By Supplier": return ContractState.CANCELED_BY_SUPPLIER;
+		case "canceled sy shopkeeper":
+		case "Canceled By Shopkeeper": return ContractState.CANCELED_BY_SHOPKEEPER;
 		}
 		return null;
 	}
