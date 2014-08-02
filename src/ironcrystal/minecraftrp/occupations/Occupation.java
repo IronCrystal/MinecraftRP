@@ -12,6 +12,8 @@ public class Occupation {
 		case "Shop Keeper":
 		case "Shop keeper":
 		case "shopkeeper": return Occupations.SHOPKEEPER;
+		case "construction":
+		case "Construction": return Occupations.CONSTRUCTION_WORKER;
 		}
 		return null;
 	}

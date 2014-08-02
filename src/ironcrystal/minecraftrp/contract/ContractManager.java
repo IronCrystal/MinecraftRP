@@ -138,7 +138,7 @@ public class ContractManager {
 						return contract;
 					}
 				}
-				else if (contract.getSupplier() != null) {
+				if (contract.getSupplier() != null) {
 					if (contract.getSupplier().getUUID().equals(uuid)) {
 						return contract;
 					}

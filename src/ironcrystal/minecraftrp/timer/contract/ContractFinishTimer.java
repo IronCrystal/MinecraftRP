@@ -12,7 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ContractFinishTimer implements Runnable {
-
+//bob
 	@Override
 	public void run() {
 		List<Contract> clone = new ArrayList<Contract>();

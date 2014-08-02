@@ -29,7 +29,7 @@ public class PlaceChest implements Listener {
 
 			if (block.getType() == Material.CHEST) {
 				if (ContractManager.playersPlacingChests.contains(player.getUniqueId())) {
-					ContractManager.playersPlacingChests.remove(player.getUniqueId());
+					
 					OccupationalPlayer occPlayer = new OccupationalPlayer(player.getUniqueId());
 					if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
 						Shopkeeper shop = new Shopkeeper(occPlayer.getUUID());
@@ -39,8 +39,10 @@ public class PlaceChest implements Listener {
 						if (isComplete) {
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have succesfully started your contract!");
 							Bukkit.getPlayer(contract.getSupplier().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] You contract has started!");
+							ContractManager.playersPlacingChests.remove(player.getUniqueId());
 						}else{
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You succesfully placed your chest, waiting for partner.");
+							ContractManager.playersPlacingChests.remove(player.getUniqueId());
 						}
 						placeSignOnChest(block, player);
 					}
@@ -52,8 +54,10 @@ public class PlaceChest implements Listener {
 						if (isComplete) {
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You have succesfully started your contract!");
 							Bukkit.getPlayer(contract.getSupplier().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] You contract has started!");
+							ContractManager.playersPlacingChests.remove(player.getUniqueId());
 						}else{
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] You succesfully placed your chest, waiting for partner.");
+							ContractManager.playersPlacingChests.remove(player.getUniqueId());
 						}
 						placeSignOnChest(block, player);
 					}

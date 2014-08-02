@@ -4,7 +4,8 @@ public enum Occupations {
 	CITIZEN,
 	SUPPLIER,
 	SHOPKEEPER,
-	MAYOR;
+	MAYOR,
+	CONSTRUCTION_WORKER;
 	
 	@Override
 	public String toString() {
@@ -13,6 +14,7 @@ public enum Occupations {
 		case SUPPLIER: return "Supplier";
 		case MAYOR: return "Mayor";
 		case SHOPKEEPER: return "Shopkeeper";
+		case CONSTRUCTION_WORKER: return "Construction";
 		}
 		return null;
 	}

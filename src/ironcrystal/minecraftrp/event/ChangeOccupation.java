@@ -1,9 +1,7 @@
 package ironcrystal.minecraftrp.event;
 
 import ironcrystal.minecraftrp.occupations.Occupations;
-import ironcrystal.minecraftrp.player.Mayor;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
-import ironcrystal.minecraftrp.town.TownManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,9 +26,7 @@ public class ChangeOccupation implements Listener {
 				if (sign.getLine(0).equalsIgnoreCase(ChatColor.BOLD + "[MinecraftRP]") 
 						&& sign.getLine(2).equalsIgnoreCase(ChatColor.BOLD + "Change Occup")) {
 					String str = ChatColor.stripColor(sign.getLine(1)).toLowerCase();
-					if (p.getOccupation() == Occupations.MAYOR && TownManager.getTown(new Mayor(p.getUUID())) != null) {
-						player.sendMessage(ChatColor.RED + "[MinecraftRP] You cannot change occupations while you own a town!");
-					}else{
+					if (p.canChangeOccupation()) {
 						switch(str) {
 						case "mayor": 
 							p.setOccupation(Occupations.MAYOR);
@@ -48,8 +44,14 @@ public class ChangeOccupation implements Listener {
 							p.setOccupation(Occupations.SHOPKEEPER);
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Set: Shopkeeper");
 							break;
+						case "construction": 
+							p.setOccupation(Occupations.CONSTRUCTION_WORKER);
+							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Occupation Set: Construction Worker");
+							break;
 						default:
 						}
+					}else{
+						player.sendMessage(p.getCannotChangeReason());
 					}
 				}
 			}

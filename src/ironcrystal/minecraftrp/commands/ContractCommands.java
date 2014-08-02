@@ -100,6 +100,7 @@ public class ContractCommands {
 		OfflinePlayer offP = Bukkit.getOfflinePlayer(nameToSend);
 		if (offP.isOnline()) {
 			Player pl = offP.getPlayer();
+			Player p = Bukkit.getPlayer(player.getUUID());
 			OccupationalPlayer occPlayer = new OccupationalPlayer(pl.getUniqueId());
 			if (contract != null) {
 				if (contract.getShopkeeper() == null) {
@@ -110,6 +111,7 @@ public class ContractCommands {
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + contract.getSupplier().getLastKnownName() + " has sent you a contract!");
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] Read it first and if you agree, type " + ChatColor.RED + "/rp contract accept");
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] If you wish to decline, type " + ChatColor.RED + "/rp contract decline");
+						p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent contract to " + pl.getName());
 					}else{
 						Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send this contract to a shopkeeper!");
 					}
@@ -122,6 +124,7 @@ public class ContractCommands {
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + contract.getShopkeeper().getLastKnownName() + " has sent you a contract!");
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] Read it first and if you agree, type " + ChatColor.RED + "/rp contract accept");
 						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] If you wish to decline, type " + ChatColor.RED + "/rp contract decline");
+						p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent contract to " + pl.getName());
 					}else{
 						Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send this contract to a supplier!");
 					}
@@ -129,8 +132,7 @@ public class ContractCommands {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Contract tried sending, but neither shopkeeper and supplier are null");
 				}
 			}else{
-				Player p = Bukkit.getPlayer(player.getUUID());
-				p.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have any contracts that aren't started!");
+				Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You don't have any contracts that aren't started!");
 			}
 		}else{
 			Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send the contract to an online player!");

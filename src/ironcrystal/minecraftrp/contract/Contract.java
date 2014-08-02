@@ -147,7 +147,7 @@ public class Contract {
 			}else{
 				color = ChatColor.GREEN;
 			}
-			newPage = newPage + items.get(i).getType().toString() + " x" + color + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount();
+			newPage = newPage + items.get(i).getType().toString() + " x" + color + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount() + ChatColor.BLACK;
 			if (i != items.size() - 1) {
 				newPage = newPage + "\n";
 			}
@@ -175,11 +175,11 @@ public class Contract {
 	}
 
 	public String getTimeString(Long time) {
-		if (time / 1728000 > 0) {
-			return time / 1728000 + " d";
+		if (time / 86400000 > 0) {
+			return time / 86400000 + " days";
 		}
-		else if (time / 72000 > 0) {
-			return time / 72000 + " h";
+		else if (time / 3600000 > 0) {
+			return time / 3600000 + " hours";
 		}
 		return "";
 	}
@@ -290,5 +290,13 @@ public class Contract {
 		fileConfig.set("Supply Chest", coords);
 		fileConfig.set("Supply Chest World", loc.getWorld().getName());
 		Files.saveFile(file, fileConfig);
+	}
+	
+	public File getFile() {
+		return file;
+	}
+	
+	public FileConfiguration getFileConfig() {
+		return fileConfig;
 	}
 }

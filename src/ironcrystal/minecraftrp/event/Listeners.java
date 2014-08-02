@@ -1,6 +1,7 @@
 package ironcrystal.minecraftrp.event;
 
 import ironcrystal.minecraftrp.MinecraftRP;
+import ironcrystal.minecraftrp.event.contract.ChestBreak;
 import ironcrystal.minecraftrp.event.contract.CreateContract;
 import ironcrystal.minecraftrp.event.contract.PlaceChest;
 import ironcrystal.minecraftrp.event.town.MayorClaimLand;
@@ -22,6 +23,7 @@ public class Listeners {
 	private static PlayerExitServer playerExitServer;
 	private static CreateContract createContract;
 	private static PlaceChest placeChest;
+	private static ChestBreak chestBreak;
 	
 	private static void initializeListeners(MinecraftRP main) {
 		playerJoin = new PlayerJoin();
@@ -34,6 +36,7 @@ public class Listeners {
 		playerExitServer = new PlayerExitServer();
 		createContract = new CreateContract();
 		placeChest = new PlaceChest();
+		chestBreak = new ChestBreak();
 	}
 	
 	public static void registerEvents(MinecraftRP main) {
@@ -48,6 +51,7 @@ public class Listeners {
 		Bukkit.getServer().getPluginManager().registerEvents(playerExitServer, main);
 		Bukkit.getServer().getPluginManager().registerEvents(createContract, main);
 		Bukkit.getServer().getPluginManager().registerEvents(placeChest, main);
+		Bukkit.getServer().getPluginManager().registerEvents(chestBreak, main);
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Listeners Registered");
 	}
 

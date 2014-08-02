@@ -1,6 +1,8 @@
 package ironcrystal.minecraftrp.player;
 
 import ironcrystal.minecraftrp.Files;
+import ironcrystal.minecraftrp.contract.Contract;
+import ironcrystal.minecraftrp.contract.ContractManager;
 import ironcrystal.minecraftrp.occupations.Occupation;
 import ironcrystal.minecraftrp.occupations.Occupations;
 import ironcrystal.minecraftrp.town.Town;
@@ -21,9 +23,11 @@ public class OccupationalPlayer {
 	private File playerFile;
 	private FileConfiguration config;
 	private String lastKnownName;
+	private String cannotChangeReason;
 	
 	public OccupationalPlayer(UUID uuid) {
 		this.uuid = uuid;
+		this.cannotChangeReason = "";
 		this.playerFile = Files.getPlayerFile(uuid);
 		config = new YamlConfiguration();
 		Files.loadFile(playerFile, config);
@@ -41,6 +45,27 @@ public class OccupationalPlayer {
 	 */
 	public UUID getUUID() {
 		return uuid;
+	}
+	
+	public boolean canChangeOccupation() {
+		if (getOccupation() == Occupations.MAYOR && TownManager.getTown(new Mayor(uuid)) != null) {
+			this.cannotChangeReason = ChatColor.GREEN + "[MinecraftRP] You must leave your town to change occupations!";
+			return false;
+		}
+		if (getOccupation() == Occupations.SUPPLIER || getOccupation() == Occupations.SHOPKEEPER) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "" + ContractManager.inProgressContractList.size());
+			for (Contract contract : ContractManager.inProgressContractList) {
+				if (contract.getShopkeeper().getUUID().toString().equals(this.getUUID().toString()) || contract.getSupplier().getUUID().toString().equals(this.getUUID().toString())) {
+					this.cannotChangeReason = ChatColor.RED + "[MinecraftRP] You must finish your current contracts!";
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public String getCannotChangeReason() {
+		return cannotChangeReason;
 	}
 	
 	/**
@@ -93,6 +118,7 @@ public class OccupationalPlayer {
 	 * @param new occupation
 	 */
 	public void setOccupation(Occupations occupation) {
+		this.occupation = occupation;
 		config.set("Occupation", occupation.toString().toLowerCase());
 		Files.saveFile(playerFile, config);
 	}

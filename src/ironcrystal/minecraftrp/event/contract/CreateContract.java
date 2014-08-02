@@ -98,8 +98,9 @@ public class CreateContract implements Listener {
 			boolean passedItemLine = false;
 			String[] lines = page.split("\n");
 			for (String line : lines) {
-				if (line.startsWith("Price:")) {
+				if (line.startsWith("Price:") || line.startsWith("price:")) {
 					line = line.replaceFirst("Price:", "");
+					line = line.replaceFirst("price:", "");
 					if (line.contains("$")) {
 						line = line.replace("$", "");
 					}
@@ -107,24 +108,25 @@ public class CreateContract implements Listener {
 					price = Integer.parseInt(line);
 					goodPrice = true;
 				}
-				else if (line.startsWith("Time:")) {
+				else if (line.startsWith("Time:") || line.startsWith("time:")) {
 					line = line.replaceFirst("Time:", "");
+					line = line.replaceFirst("time:", "");
 					if (line.contains("h")) {
 						line = line.replace("h", "");
 						line = line.trim();
 						durationString = Long.parseLong(line) + " hours";
-						duration = Long.parseLong(line) * 72000;
+						duration = Long.parseLong(line) * 3600000;
 						goodDuration = true;
 					}
 					else if (line.contains("d")) {
 						line = line.replace("d", "");
 						line = line.trim();
 						durationString = Long.parseLong(line) + " days";
-						duration = Long.parseLong(line) * 1728000;
+						duration = Long.parseLong(line) * 86400000;
 						goodDuration = true;
 					}
 				}
-				else if (line.startsWith("Items:")) {
+				else if (line.startsWith("Items:") || line.startsWith("items:")) {
 					passedItemLine = true;
 					continue;
 				}
