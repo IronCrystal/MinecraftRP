@@ -210,7 +210,6 @@ public class OccupationalCommands implements CommandExecutor {
 								sendTownHelp(player);
 							}
 						}
-						//bob
 					}
 					else if (args[0].equalsIgnoreCase("contract")) {
 						if (args.length == 1) {
