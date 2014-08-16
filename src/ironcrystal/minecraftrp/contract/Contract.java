@@ -156,15 +156,23 @@ public class Contract {
 	}
 
 	public void addItemProgress(ItemStack item) {
-		for (ItemStack i : itemProgress) {
-			i.setAmount(item.getAmount());
-			List<String[]> itemList = new ArrayList<String[]>();
-			for (ItemStack itemStack : itemProgress) {
-				String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
-				itemList.add(itemInfo);
+		for (int x = 0; x < itemProgress.size(); x++) {
+			ItemStack totalItem = items.get(x);
+			ItemStack progressItem = itemProgress.get(x);
+			if (item.getType() == progressItem.getType()) {
+				if (progressItem.getAmount() < totalItem.getAmount()) {
+					progressItem.setAmount(progressItem.getAmount() + item.getAmount());
+					itemProgress.set(x, progressItem);
+					break;
+				}
 			}
-			fileConfig.set("Item Progress", itemList);
 		}
+		List<String[]> itemList = new ArrayList<String[]>();
+		for (ItemStack itemStack : itemProgress) {
+			String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
+			itemList.add(itemInfo);
+		}
+		fileConfig.set("Item Progress", itemList);
 	}
 
 	public Long getTimeLeft() {
@@ -298,5 +306,9 @@ public class Contract {
 	
 	public FileConfiguration getFileConfig() {
 		return fileConfig;
+	}
+
+	public List<ItemStack> getItemProgress() {
+		return itemProgress;
 	}
 }

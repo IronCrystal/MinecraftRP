@@ -33,6 +33,26 @@ public class RegionCreation implements Listener {
 					if (!isWithinTown(event.getPlayer())) {
 						event.setCancelled(true);
 						event.getPlayer().sendMessage(ChatColor.RED + "[MinecraftRP] You can only claim land within your town!");
+					}else{
+						//Player is allowed to use world guard
+						Town town = TownManager.getTown(new Mayor(p.getUUID()));
+						String[] message = event.getMessage().split(" ");
+						if (!message[2].contains(town.getName())) {
+							message[2] = town.getName() + "_" + message[2];
+							String newMessage = "";
+							for (String string: message) {
+								newMessage += string;
+							}
+							event.setMessage(newMessage);
+						}
+						if (message[2].length() > 15) {
+							message[2] = message[2].substring(0, 15);
+							String newMessage = "";
+							for (String string: message) {
+								newMessage += string;
+							}
+							event.setMessage(newMessage);
+						}
 					}
 				}
 			}

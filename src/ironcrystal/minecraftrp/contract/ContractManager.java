@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -268,5 +269,75 @@ public class ContractManager {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean blockIsActiveChest(Block block) {
+		for (Contract contract : inProgressContractList) {
+			if (contract.getState() == ContractState.INPROGRESS) {
+				Block shop = contract.getShopChest();
+				Block supply = contract.getSupplyChest();
+				if (shop != null && supply != null) {
+					if ((shop.getLocation().getBlockX() == block.getLocation().getBlockX() 
+							&& shop.getLocation().getBlockY() == block.getLocation().getBlockY()
+							&& shop.getLocation().getBlockZ() == block.getLocation().getBlockZ())
+						||
+							(supply.getLocation().getBlockX() == block.getLocation().getBlockX() 
+							&& supply.getLocation().getBlockY() == block.getLocation().getBlockY()
+							&& supply.getLocation().getBlockZ() == block.getLocation().getBlockZ())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean blockIsSupplyChest(Block block) {
+		for (Contract contract : inProgressContractList) {
+			if (contract.getState() == ContractState.INPROGRESS) {
+				Block supply = contract.getSupplyChest();
+				if (supply != null) {
+					if ((supply.getLocation().getBlockX() == block.getLocation().getBlockX() 
+							&& supply.getLocation().getBlockY() == block.getLocation().getBlockY()
+							&& supply.getLocation().getBlockZ() == block.getLocation().getBlockZ())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static Contract getContract(Block block) {
+		for (Contract contract : inProgressContractList) {
+			if (contract.getState() == ContractState.INPROGRESS) {
+				Block shop = contract.getShopChest();
+				Block supply = contract.getSupplyChest();
+				if (shop != null && supply != null) {
+					if ((shop.getLocation().getBlockX() == block.getLocation().getBlockX() 
+							&& shop.getLocation().getBlockY() == block.getLocation().getBlockY()
+							&& shop.getLocation().getBlockZ() == block.getLocation().getBlockZ())
+						||
+							(supply.getLocation().getBlockX() == block.getLocation().getBlockX() 
+							&& supply.getLocation().getBlockY() == block.getLocation().getBlockY()
+							&& supply.getLocation().getBlockZ() == block.getLocation().getBlockZ())) {
+						return contract;
+					}
+				}
+			}
+		}
+		return null;	
+	}
+	
+	public static boolean isContractComplete(Contract contract) {
+		List<ItemStack> itemTotal = contract.getItems();
+		List<ItemStack> itemProgress = contract.getItemProgress();
+		
+		for (int x = 0; x < itemTotal.size(); x++) {
+			if (itemTotal.get(x).getAmount() != itemProgress.get(x).getAmount()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
