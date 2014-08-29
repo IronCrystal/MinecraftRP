@@ -74,14 +74,14 @@ public class ContractManager {
 		}
 		fileConfig.set("Items", itemList);
 
-		List<ItemStack> progressItems = new ArrayList<ItemStack>();
+		/*List<ItemStack> progressItems = new ArrayList<ItemStack>();
 		for (ItemStack itemStack : items) {
 			progressItems.add(new ItemStack(itemStack.getType(), 0));
-		}
+		}*/
 
 		List<String[]> progressList = new ArrayList<String[]>();
-		for (ItemStack itemStack : progressItems) {
-			String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
+		for (ItemStack itemStack : items) {
+			String[] itemInfo = {itemStack.getType().toString(), 0 + ""};
 			progressList.add(itemInfo);
 		}
 		fileConfig.set("Item Progress", progressList);
@@ -330,11 +330,10 @@ public class ContractManager {
 	}
 	
 	public static boolean isContractComplete(Contract contract) {
-		List<ItemStack> itemTotal = contract.getItems();
-		List<ItemStack> itemProgress = contract.getItemProgress();
+		List<ContractItem> items = contract.getItems();
 		
-		for (int x = 0; x < itemTotal.size(); x++) {
-			if (itemTotal.get(x).getAmount() != itemProgress.get(x).getAmount()) {
+		for (ContractItem item : items) {
+			if (item.getProgress() < item.getTotal()) {
 				return false;
 			}
 		}

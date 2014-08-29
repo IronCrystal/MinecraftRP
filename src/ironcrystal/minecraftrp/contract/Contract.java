@@ -25,8 +25,8 @@ public class Contract {
 	private Supplier supplier;
 	private Shopkeeper shopkeeper;
 	private double price;
-	private List<ItemStack> items;
-	private List<ItemStack> itemProgress;
+	private List<ContractItem> items;
+	//private List<ItemStack> itemProgress;
 	private long timeStarted;
 	private long timeLimit;
 	private int id;
@@ -40,8 +40,8 @@ public class Contract {
 	@SuppressWarnings("unchecked")
 	protected Contract(int id) {
 		this.id = id;
-		this.items = new ArrayList<ItemStack>();
-		this.itemProgress = new ArrayList<ItemStack>();
+		this.items = new ArrayList<ContractItem>();
+		//this.itemProgress = new ArrayList<ItemStack>();
 		this.file = Files.getContractFile(id);
 		if (!this.file.exists()) {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] WARNING: A contract object was created but the file has not been created!");
@@ -76,18 +76,17 @@ public class Contract {
 				String itemName = stringArray.get(0);
 				String stringAmount = stringArray.get(1);
 				int amount = Integer.parseInt(stringAmount);
-				ItemStack item = new ItemStack(Material.getMaterial(itemName), amount);
+				ContractItem item = new ContractItem(this, amount, 0, Material.getMaterial(itemName));
+				//ItemStack item = new ItemStack(Material.getMaterial(itemName), amount);
 				items.add(item);
 			}
 		}
 		if (fileConfig.getList("Item Progress") != null) {
 			List<List<String>> itemList = (List<List<String>>) fileConfig.getList("Item Progress");
-			for (List<String> stringArray : itemList) {
-				String itemName = stringArray.get(0);
-				String stringAmount = stringArray.get(1);
-				int amount = Integer.parseInt(stringAmount);
-				ItemStack item = new ItemStack(Material.getMaterial(itemName), amount);
-				itemProgress.add(item);
+			for (int x = 0; x < itemList.size(); x++) {
+				List<String> stringArray = itemList.get(x);
+				int amount = Integer.parseInt(stringArray.get(1));
+				items.get(x).setProgress(amount);
 			}
 		}
 		if (fileConfig.getIntegerList("Shop Chest") != null && fileConfig.getString("Shop Chest World") != null) {
@@ -136,8 +135,8 @@ public class Contract {
 				+ getTimeString(timeLimit) + ChatColor.BLUE + "\nItems:\n" + ChatColor.BLACK;
 		for (int i = 0; i < items.size(); i++) {
 			ChatColor color = null;
-			int progress = itemProgress.get(i).getAmount();
-			int total = items.get(i).getAmount();
+			int progress = items.get(i).getProgress();
+			int total = items.get(i).getTotal();
 			double percent = (progress * 1.0 )/ total;
 			if (percent < 0.5) {
 				color = ChatColor.RED;
@@ -147,7 +146,7 @@ public class Contract {
 			}else{
 				color = ChatColor.GREEN;
 			}
-			newPage = newPage + items.get(i).getType().toString() + " x" + color + itemProgress.get(i).getAmount() + "/" + items.get(i).getAmount() + ChatColor.BLACK;
+			newPage = newPage + items.get(i).getType().toString() + " x" + color + progress + "/" + total + ChatColor.BLACK;
 			if (i != items.size() - 1) {
 				newPage = newPage + "\n";
 			}
@@ -155,24 +154,40 @@ public class Contract {
 		return newPage;
 	}
 
-	public void addItemProgress(ItemStack item) {
-		for (int x = 0; x < itemProgress.size(); x++) {
-			ItemStack totalItem = items.get(x);
-			ItemStack progressItem = itemProgress.get(x);
-			if (item.getType() == progressItem.getType()) {
-				if (progressItem.getAmount() < totalItem.getAmount()) {
-					progressItem.setAmount(progressItem.getAmount() + item.getAmount());
-					itemProgress.set(x, progressItem);
-					break;
+	/**
+	 * Returns the amount of the item transferred to shop chest
+	 * @param item to be transferred
+	 * @return amount transferred
+	 */
+	public int addItemProgress(ItemStack item) {
+		int amountLeftToAdd = item.getAmount();
+		int amountTransferred = 0;
+		Material type = item.getType();
+		for (ContractItem contractItem : items) {
+			if (contractItem.getType() == type) {
+				if (contractItem.getProgress() < 64) {
+					if (contractItem.getProgress() + amountLeftToAdd > 64) {
+						amountTransferred = 64 - contractItem.getProgress();
+						amountLeftToAdd = contractItem.getProgress() + amountLeftToAdd - 64;
+						contractItem.setProgress(64);
+					}else{
+						amountTransferred += amountLeftToAdd;
+						contractItem.setProgress(contractItem.getProgress() + amountLeftToAdd);
+						amountLeftToAdd = 0;
+						break;
+					}
 				}
 			}
 		}
+		
 		List<String[]> itemList = new ArrayList<String[]>();
-		for (ItemStack itemStack : itemProgress) {
-			String[] itemInfo = {itemStack.getType().toString(), itemStack.getAmount() + ""};
+		for (ContractItem itemStack : items) {
+			String[] itemInfo = {itemStack.getType().toString(), itemStack.getProgress() + ""};
 			itemList.add(itemInfo);
 		}
 		fileConfig.set("Item Progress", itemList);
+		Files.saveFile(file, fileConfig);
+		return amountTransferred;
 	}
 
 	public Long getTimeLeft() {
@@ -222,11 +237,11 @@ public class Contract {
 		Files.saveFile(file, fileConfig);
 	}
 
-	public List<ItemStack> getItems() {
+	public List<ContractItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<ItemStack> items) {
+	public void setItems(List<ContractItem> items) {
 		this.items = items;
 	}
 
@@ -306,9 +321,5 @@ public class Contract {
 	
 	public FileConfiguration getFileConfig() {
 		return fileConfig;
-	}
-
-	public List<ItemStack> getItemProgress() {
-		return itemProgress;
 	}
 }
