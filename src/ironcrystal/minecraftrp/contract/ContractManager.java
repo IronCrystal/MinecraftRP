@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -238,11 +241,11 @@ public class ContractManager {
 	public static void runTimers(MinecraftRP main) {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new ContractFinishTimer(), 0L, 6000L);
 	}
-	
+
 	public static void giveContractPartnersChests(Contract contract) {
 		Shopkeeper shop = contract.getShopkeeper();
 		Supplier supply = contract.getSupplier();
-		
+
 		if (shop != null && supply != null) {
 			Player shopPlayer = Bukkit.getPlayer(shop.getUUID());
 			Player supplyPlayer = Bukkit.getPlayer(supply.getUUID());
@@ -260,7 +263,7 @@ public class ContractManager {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Somehow a giveContractPartnerssChests() was called when one of the partners is null!");
 		}
 	}
-	
+
 	public static boolean checkForBothChests(Contract contract) {
 		if (contract.getShopChest() != null && contract.getSupplyChest() != null) {
 			contract.setState(ContractState.INPROGRESS);
@@ -270,7 +273,7 @@ public class ContractManager {
 		}
 		return false;
 	}
-	
+
 	public static boolean blockIsActiveChest(Block block) {
 		for (Contract contract : inProgressContractList) {
 			if (contract.getState() == ContractState.INPROGRESS) {
@@ -280,7 +283,7 @@ public class ContractManager {
 					if ((shop.getLocation().getBlockX() == block.getLocation().getBlockX() 
 							&& shop.getLocation().getBlockY() == block.getLocation().getBlockY()
 							&& shop.getLocation().getBlockZ() == block.getLocation().getBlockZ())
-						||
+							||
 							(supply.getLocation().getBlockX() == block.getLocation().getBlockX() 
 							&& supply.getLocation().getBlockY() == block.getLocation().getBlockY()
 							&& supply.getLocation().getBlockZ() == block.getLocation().getBlockZ())) {
@@ -291,7 +294,7 @@ public class ContractManager {
 		}
 		return false;
 	}
-	
+
 	public static boolean blockIsSupplyChest(Block block) {
 		for (Contract contract : inProgressContractList) {
 			if (contract.getState() == ContractState.INPROGRESS) {
@@ -307,7 +310,7 @@ public class ContractManager {
 		}
 		return false;
 	}
-	
+
 	public static Contract getContract(Block block) {
 		for (Contract contract : inProgressContractList) {
 			if (contract.getState() == ContractState.INPROGRESS) {
@@ -317,7 +320,7 @@ public class ContractManager {
 					if ((shop.getLocation().getBlockX() == block.getLocation().getBlockX() 
 							&& shop.getLocation().getBlockY() == block.getLocation().getBlockY()
 							&& shop.getLocation().getBlockZ() == block.getLocation().getBlockZ())
-						||
+							||
 							(supply.getLocation().getBlockX() == block.getLocation().getBlockX() 
 							&& supply.getLocation().getBlockY() == block.getLocation().getBlockY()
 							&& supply.getLocation().getBlockZ() == block.getLocation().getBlockZ())) {
@@ -328,15 +331,45 @@ public class ContractManager {
 		}
 		return null;	
 	}
-	
+
 	public static boolean isContractComplete(Contract contract) {
 		List<ContractItem> items = contract.getItems();
-		
+
 		for (ContractItem item : items) {
 			if (item.getProgress() < item.getTotal()) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public static boolean takeMoneyFromShopkeeper(Contract contract) {
+		double price = contract.getPrice();
+		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(contract.getShopkeeper().getUUID());
+		EconomyResponse response = MinecraftRP.econ.withdrawPlayer(offPlayer, price);
+		if (response.transactionSuccess()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean refundShopkeeper(Contract contract) {
+		double price = contract.getPrice();
+		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(contract.getShopkeeper().getUUID());
+		EconomyResponse response = MinecraftRP.econ.depositPlayer(offPlayer, price);
+		if (response.transactionSuccess()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean sendMoneyToSupplier(Contract contract) {
+		double price = contract.getPrice();
+		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(contract.getSupplier().getUUID());
+		EconomyResponse response = MinecraftRP.econ.depositPlayer(offPlayer, price);
+		if (response.transactionSuccess()) {
+			return true;
+		}
+		return false;
 	}
 }

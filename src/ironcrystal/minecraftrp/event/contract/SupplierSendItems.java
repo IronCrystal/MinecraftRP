@@ -87,6 +87,10 @@ public class SupplierSendItems implements Listener {
 
 									if (ContractManager.isContractComplete(contract)) {
 										player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Congratulations!  You completed your contract!");
+										boolean sent = ContractManager.sendMoneyToSupplier(contract);
+										if (sent) {
+											player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Money for completing contract received!");
+										}
 										if (Bukkit.getPlayer(contract.getShopkeeper().getUUID()) != null) {
 											Bukkit.getPlayer(contract.getShopkeeper().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] " + player.getName()
 													+ " has completed your contract succesfully!");

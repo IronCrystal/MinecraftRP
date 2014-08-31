@@ -26,6 +26,7 @@ public class ContractFinishTimer implements Runnable {
 			
 			if (timeStarted + timeLimit < currentTime) {
 				contract.setState(ContractState.FINISHED_FAILED);
+				boolean refunded = ContractManager.refundShopkeeper(contract);
 				Player shop = Bukkit.getPlayer(contract.getShopkeeper().getUUID());
 				Player supply = Bukkit.getPlayer(contract.getSupplier().getUUID());
 				if (supply != null) {
@@ -33,6 +34,9 @@ public class ContractFinishTimer implements Runnable {
 				}
 				if (shop != null) {
 					shop.sendMessage(ChatColor.RED + "[MinecraftRP] " + contract.getSupplier().getLastKnownName() + " failed the contract with you!");
+					if (refunded) {
+						shop.sendMessage(ChatColor.GREEN + "[MinecraftRP] Your money has been refunded!");
+					}
 				}
 				ContractManager.inProgressContractList.remove(contract);
 			}

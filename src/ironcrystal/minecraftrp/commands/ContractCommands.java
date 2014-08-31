@@ -1,5 +1,6 @@
 package ironcrystal.minecraftrp.commands;
 
+import ironcrystal.minecraftrp.MinecraftRP;
 import ironcrystal.minecraftrp.contract.Contract;
 import ironcrystal.minecraftrp.contract.ContractManager;
 import ironcrystal.minecraftrp.contract.ContractState;
@@ -88,6 +89,10 @@ public class ContractCommands {
 				contract.setSupplier(supplier);
 				Bukkit.getPlayer(contract.getShopkeeper().getUUID()).sendMessage(ChatColor.GREEN + "[MinecraftRP] " + p.getName() + " accepted your contract!");
 			}
+			boolean moneyTaken = ContractManager.takeMoneyFromShopkeeper(contract);
+			if (!moneyTaken) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Somehow the money transaction for contract " + contract.getId() + " didn't work!");
+			}
 			PlayersAcceptingContract.remove(occPlayer.getUUID());
 			ContractManager.giveContractPartnersChests(contract);
 		}else{
@@ -106,13 +111,18 @@ public class ContractCommands {
 			if (contract != null) {
 				if (contract.getShopkeeper() == null) {
 					if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
-						Shopkeeper shopkeeper = new Shopkeeper(pl.getUniqueId());
-						shopkeeper.sendContract(contract);
-						PlayersAcceptingContract.put(shopkeeper.getUUID(), contract);
-						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + contract.getSupplier().getLastKnownName() + " has sent you a contract!");
-						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] Read it first and if you agree, type " + ChatColor.RED + "/rp contract accept");
-						pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] If you wish to decline, type " + ChatColor.RED + "/rp contract decline");
-						p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent contract to " + pl.getName());
+						Bukkit.broadcastMessage("$" + MinecraftRP.econ.getBalance(offP));
+						if (MinecraftRP.econ.getBalance(offP) >= contract.getPrice()) {
+							Shopkeeper shopkeeper = new Shopkeeper(pl.getUniqueId());
+							shopkeeper.sendContract(contract);
+							PlayersAcceptingContract.put(shopkeeper.getUUID(), contract);
+							pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] " + contract.getSupplier().getLastKnownName() + " has sent you a contract!");
+							pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] Read it first and if you agree, type " + ChatColor.RED + "/rp contract accept");
+							pl.sendMessage(ChatColor.GREEN + "[MinecraftRP] If you wish to decline, type " + ChatColor.RED + "/rp contract decline");
+							p.sendMessage(ChatColor.GREEN + "[MinecraftRP] Sent contract to " + pl.getName());
+						}else{
+							Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] This player doesn't have enough money!");
+						}
 					}else{
 						Bukkit.getPlayer(player.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must send this contract to a shopkeeper!");
 					}
@@ -149,7 +159,7 @@ public class ContractCommands {
 			Bukkit.getPlayer(occPlayer.getUUID()).sendMessage(ChatColor.RED + "[MinecraftRP] You must be a shopkeeper or supplier to have contracts!");
 		}
 	}
-	
+
 	public static void getContractHistory(OccupationalPlayer occPlayer) {
 		if (occPlayer.getOccupation() == Occupations.SHOPKEEPER || occPlayer.getOccupation() == Occupations.SUPPLIER) {
 			Player player = Bukkit.getPlayer(occPlayer.getUUID());

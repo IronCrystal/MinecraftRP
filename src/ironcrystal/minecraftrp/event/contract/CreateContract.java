@@ -1,5 +1,7 @@
 package ironcrystal.minecraftrp.event.contract;
 
+import ironcrystal.minecraftrp.MinecraftRP;
+import ironcrystal.minecraftrp.contract.Contract;
 import ironcrystal.minecraftrp.contract.ContractManager;
 import ironcrystal.minecraftrp.occupations.Occupations;
 import ironcrystal.minecraftrp.player.OccupationalPlayer;
@@ -10,8 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,18 +53,32 @@ public class CreateContract implements Listener {
 								newPage = newPage + "\n";
 							}
 						}
-						meta.setPage(1, newPage);
-						meta.setPage(2, "");
-						meta.setTitle("Contract");
-						meta.setAuthor(player.getName());
-						event.setNewBookMeta(meta);
+						
 						if (occPlayer.getOccupation() == Occupations.SUPPLIER) {
-							ContractManager.createNewContract(new Supplier(uuid), null, price, 0, duration, items);
+							Contract contract = ContractManager.createNewContract(new Supplier(uuid), null, price, 0, duration, items);
 							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contract created succesfully!");
+							List<String> page = new ArrayList<String>();
+							page.add(contract.getContractPage());
+							meta.setPages(page);
+							meta.setTitle("Contract");
+							meta.setAuthor(player.getName());
+							event.setNewBookMeta(meta);
 						}
 						else if (occPlayer.getOccupation() == Occupations.SHOPKEEPER) {
-							ContractManager.createNewContract(null, new Shopkeeper(uuid), price, 0, duration, items);
-							player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contract created succesfully!");
+							OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(occPlayer.getUUID());
+							if (MinecraftRP.econ.getBalance(offPlayer) >= price) {
+								Contract contract = ContractManager.createNewContract(null, new Shopkeeper(uuid), price, 0, duration, items);
+								player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Contract created succesfully!");
+								List<String> page = new ArrayList<String>();
+								page.add(contract.getContractPage());
+								meta.setPages(page);
+								meta.setTitle("Contract");
+								meta.setAuthor(player.getName());
+								event.setNewBookMeta(meta);
+							}else{
+								player.sendMessage(ChatColor.RED + "[MinecraftRP] You don't have enough money for that contract!");
+								event.setCancelled(true);
+							}
 						}						
 					}else{
 						player.sendMessage(ChatColor.RED + "[MinecraftRP] Contract not created succesfully!");
