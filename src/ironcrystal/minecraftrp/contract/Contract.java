@@ -146,7 +146,7 @@ public class Contract {
 			}else{
 				color = ChatColor.GREEN;
 			}
-			newPage = newPage + items.get(i).getType().toString() + " x" + color + progress + "/" + total + ChatColor.BLACK;
+			newPage = newPage + items.get(i).getMaterial().toString() + " x" + color + progress + "/" + total + ChatColor.BLACK;
 			if (i != items.size() - 1) {
 				newPage = newPage + "\n";
 			}
@@ -160,12 +160,34 @@ public class Contract {
 	 * @return amount transferred
 	 */
 	public int addItemProgress(ItemStack item) {
-		int amountLeftToAdd = item.getAmount();
+		int amountTotalTransferred = 0;
 		int amountTransferred = 0;
+		int amountLeft = item.getAmount();
 		Material type = item.getType();
 		for (ContractItem contractItem : items) {
-			if (contractItem.getType() == type) {
-				if (contractItem.getProgress() < 64) {
+			if (contractItem.getMaterial() == type) {
+				if (contractItem.getProgress() < contractItem.getTotal()) {
+					if (contractItem.getProgress() + amountLeft > contractItem.getTotal()) {
+						amountTransferred = contractItem.getTotal() - contractItem.getProgress();
+						contractItem.setProgress(contractItem.getProgress() + amountTransferred);
+						amountLeft -= amountTransferred;
+						amountTotalTransferred += amountTransferred;
+						if (amountLeft <= 0) {
+							break;
+						}
+					}else{
+						amountTransferred = amountLeft;
+						contractItem.setProgress(contractItem.getProgress() + amountTransferred);
+						amountLeft -= amountTransferred;
+						amountTotalTransferred += amountTransferred;
+						if (amountLeft <= 0) {
+							break;
+						}
+					}
+				}
+			}
+		}
+				/*if (contractItem.getProgress() < 64) {
 					if (contractItem.getProgress() + amountLeftToAdd > 64) {
 						amountTransferred = 64 - contractItem.getProgress();
 						amountLeftToAdd = contractItem.getProgress() + amountLeftToAdd - 64;
@@ -178,16 +200,16 @@ public class Contract {
 					}
 				}
 			}
-		}
+		}*/
 		
 		List<String[]> itemList = new ArrayList<String[]>();
 		for (ContractItem itemStack : items) {
-			String[] itemInfo = {itemStack.getType().toString(), itemStack.getProgress() + ""};
+			String[] itemInfo = {itemStack.getMaterial().toString(), itemStack.getProgress() + ""};
 			itemList.add(itemInfo);
 		}
 		fileConfig.set("Item Progress", itemList);
 		Files.saveFile(file, fileConfig);
-		return amountTransferred;
+		return amountTotalTransferred;
 	}
 
 	public Long getTimeLeft() {

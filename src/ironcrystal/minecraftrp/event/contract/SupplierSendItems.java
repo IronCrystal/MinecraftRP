@@ -55,11 +55,12 @@ public class SupplierSendItems implements Listener {
 								}
 							}*/
 							int amountTransferred = contract.addItemProgress(item);
-							Bukkit.broadcastMessage(ChatColor.GREEN + "[MinecraftRP] Amount Transferred: " + amountTransferred);
 							if (amountTransferred > 0) {
-								realItems[x].setAmount(item.getAmount() - amountTransferred);
-								if (realItems[x].getAmount() <= 0) {
-									realItems[x] = null;
+								if (realItems[x].getAmount() > amountTransferred) {
+									realItems[x].setAmount(item.getAmount() - amountTransferred);
+								}else{
+									chest.getInventory().removeItem(new ItemStack(material, item.getAmount()));
+									chest.update();
 								}
 								/*int total = totalItem.getAmount();
 								int progress = progressItem.getAmount();
@@ -82,7 +83,7 @@ public class SupplierSendItems implements Listener {
 								}
 								if (event.getPlayer() instanceof Player) {
 									Player player = (Player) event.getPlayer();
-									player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Delivered " + item.getType().toString().toLowerCase() +" to " + contract.getShopkeeper().getLastKnownName());
+									player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Delivered " + amountTransferred + " " + item.getType().toString().toLowerCase() +" to " + contract.getShopkeeper().getLastKnownName());
 
 									if (ContractManager.isContractComplete(contract)) {
 										player.sendMessage(ChatColor.GREEN + "[MinecraftRP] Congratulations!  You completed your contract!");
@@ -94,10 +95,14 @@ public class SupplierSendItems implements Listener {
 										ContractManager.inProgressContractList.remove(contract);
 									}
 								}
+							}else{
+								if (event.getPlayer() instanceof Player) {
+									Player player = (Player) event.getPlayer();
+									player.sendMessage(ChatColor.RED + "[MinecraftRP] The contract doesn't need any more " + material.toString().toLowerCase());
+								}
 							}
 						}catch(NullPointerException npe) {
 							Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Error sending items!");
-
 						}
 					}
 				}

@@ -33,6 +33,7 @@ public class ContractCommands {
 			//bookMeta.setAuthor(ChatColor.GRAY + "IronCrystal");
 
 			bookMeta.addPage(ChatColor.ITALIC + "Format as follows:\nPrice: <amount>\nTime: <amount>[h:d]\nItems:\n<ItemName> x<amount>\n"
+					+ "\n"
 					+ "Please Start Writing On The Next Page" 
 					+ "\n\n\n\n\n\n\n\n\n" + ChatColor.RESET);
 			//bookMeta.setPage(1, "Price:\nTime:\nItems\n");
