@@ -7,6 +7,7 @@ import ironcrystal.minecraftrp.contract.ContractManager;
 import ironcrystal.minecraftrp.event.Listeners;
 import ironcrystal.minecraftrp.town.TownManager;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public class MinecraftRP extends JavaPlugin {
 	
 	public static Economy econ = null;
+	public static Permission permission = null;
 
 	@Override
 	public void onEnable() {
@@ -77,7 +79,12 @@ public class MinecraftRP extends JavaPlugin {
         }
         econ = rsp.getProvider();
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinecraftRP] Hooked into Economy Plugin!");
-        
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+        if (permissionProvider == null) {
+        	Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no Permissions plugin found!");
+        	return false;
+        }
+        permission = permissionProvider.getProvider();
         if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
         	Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[MinecraftRP] Disabled due to no WorldGuard found!");
         	return false;
